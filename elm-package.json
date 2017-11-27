@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "Typed array implementation for elm.",
-    "repository": "https://github.com/mpizenberg/elm-typed-array-exploration.git",
+    "summary": "JS typed array implementation for elm",
+    "repository": "https://github.com/mpizenberg/elm-js-typed-array.git",
     "license": "MPL-2.0",
     "source-directories": [
         "src"

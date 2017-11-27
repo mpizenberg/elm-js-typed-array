@@ -1,4 +1,4 @@
-var _mpizenberg$elm_typed_array_exploration$Native_JsArrayBuffer = function() {
+var _mpizenberg$elm_js_typed_array$Native_JsArrayBuffer = function() {
 
 function initialize( length ) {
 	return new ArrayBuffer( length );
