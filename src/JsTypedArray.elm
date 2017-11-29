@@ -1,16 +1,43 @@
-module JsUint8ClampedArray exposing (..)
+module JsTypedArray
+    exposing
+        ( Float64
+        , JsTypedArray
+        , Uint8
+        , all
+        , any
+        , buffer
+        , bufferOffset
+        , copyWithin
+        , extract
+        , filter
+        , find
+        , findLast
+        , foldl
+        , foldr
+        , getAt
+        , join
+        , length
+        , map
+        , replaceWithConstant
+        , reverse
+        , reverseSort
+        , sort
+        )
 
-{-| The `JsUint8ClampedArray` typed array represents an array
-of 8-bit unsigned integers clamped to 0-255;
-if you specify a value that is out of the range of [0,255],
-0 or 255 will be set instead.
+{-| This module wraps Javascript typed arrays in elm.
 
-@docs JsUint8ClampedArray
+@docs JsTypedArray
+
+The list of all JS typed arrays representable is as below:
+
+@docs Uint8, Float64
 
 
-# Creating `JsUint8ClampedArray`
+# Typed Array Creation
 
-@docs initialize, fromBuffer, fromArray, fromList
+Functions to initialize typed arrays are in their dedicated modules.
+See for example the function `JsUint8Array.init : Int -> JsTypedArray Uint8 Int`
+in the `JsUint8Array` module.
 
 
 # Basic Requests
@@ -21,8 +48,8 @@ if you specify a value that is out of the range of [0,255],
 # Predicates
 
 Predicates here are functions taking an index, a value, and returning a boolean.
-(`Int -> Int -> Bool`).
-The following functions use predicates to analyze arrays.
+(`Int -> b -> Bool`).
+The following functions use predicates to analyze typed arrays.
 
 @docs all, any, find, findLast, filter
 
@@ -34,7 +61,7 @@ The following functions use predicates to analyze arrays.
 
 # Array Transformations
 
-Transform a `JsUint8ClampedArray` into another `JsUint8ClampedArray`.
+Transform a typed array into another of the same type.
 All such transformations imply a full copy of the array
 to avoid side effects.
 Complexity is thus greater than O(length).
@@ -50,56 +77,38 @@ Reduce an array to a single value.
 
 -}
 
-import Array exposing (Array)
 import JsArrayBuffer exposing (JsArrayBuffer)
 
 
-{-| Wrapper type for JS Uint8ClampedArray.
--}
-type JsUint8ClampedArray
-    = JsUint8ClampedArray
+{-| `JsTypedArray a b` represents a [Javascript typed array][typed-array].
 
+[typed-array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
 
+The first type parameter `a` is used to indicate the type of data stored inside
+the array. Depending on how you initialize the array,
+it may be `Uint8`, `Int32`, `Float64` etc.
+The second type parameter `b` is used to indicate which elm type is compatible
+with the data type in the array. Most probably, it will be `Int` or `Float`.
 
--- CREATION ##########################################################
-
-
-{-| Initialize an array of 0 of a given length.
-
-Internally uses `new Uint8ClampedArray( length )`.
-
-Complexity: O(length).
+Those type parameters (`a` and `b`) are fixed are the creation of the array.
+For example, a function generating a Javascript `Uint8Array` will have the return type:
+`JsTypedArray Uint8 Int`.
 
 -}
-initialize : Int -> JsUint8ClampedArray
-initialize length =
-    Debug.crash "TODO"
+type JsTypedArray a b
+    = JsTypedArray
 
 
-{-| Initialize an array from a buffer.
-
-Internally uses `new Uint8ClampedArray( buffer, byteOffset, length )`.
-
-Complexity: O(1).
-
+{-| 8-bits unsigned integer.
 -}
-fromBuffer : Int -> Int -> JsArrayBuffer -> JsUint8ClampedArray
-fromBuffer byteOffset length buffer =
-    Debug.crash "TODO"
+type Uint8
+    = Uint8
 
 
-{-| Initialize a `JsUint8ClampedArray` from `Array Int`.
+{-| 64-bits floating point number.
 -}
-fromArray : Array Int -> JsUint8ClampedArray
-fromArray array =
-    Debug.crash "TODO"
-
-
-{-| Initialize a `JsUint8ClampedArray` from `List Int`.
--}
-fromList : List Int -> JsUint8ClampedArray
-fromList list =
-    Debug.crash "TODO"
+type Float64
+    = Float64
 
 
 
@@ -108,13 +117,13 @@ fromList list =
 
 {-| Get the number of elements in the array.
 
-Internally uses `Uint8ClampedArray.prototype.length`.
+Internally uses `TypedArray.prototype.length`.
 Beware that this length is different from its buffer length.
 
 Complexity: O(1).
 
 -}
-length : JsUint8ClampedArray -> Int
+length : JsTypedArray a b -> Int
 length array =
     Debug.crash "TODO"
 
@@ -126,31 +135,31 @@ Return `Nothing` if index is outside of bounds.
 Complexity: O(1).
 
 -}
-getAt : Int -> JsUint8ClampedArray -> Maybe Int
+getAt : Int -> JsTypedArray a b -> Maybe b
 getAt index array =
     Debug.crash "TODO"
 
 
 {-| Get the underlying data buffer of the array.
 
-Internally uses `Uint8ClampedArray.prototype.buffer`.
+Internally uses `TypedArray.prototype.buffer`.
 
 Complexity: O(1).
 
 -}
-buffer : JsUint8ClampedArray -> JsArrayBuffer
+buffer : JsTypedArray a b -> JsArrayBuffer
 buffer array =
     Debug.crash "TODO"
 
 
 {-| Get the offset (in bytes) from the start of its corresponding buffer.
 
-Internally uses `Uint8ClampedArray.prototype.byteOffset`.
+Internally uses `TypedArray.prototype.byteOffset`.
 
 Complexity: O(1).
 
 -}
-bufferOffset : JsUint8ClampedArray -> Int
+bufferOffset : JsTypedArray a b -> Int
 bufferOffset array =
     Debug.crash "TODO"
 
@@ -161,24 +170,24 @@ bufferOffset array =
 
 {-| Return `True` if all elements satisfy the predicate.
 
-Internally uses `Uint8ClampedArray.prototype.every`.
+Internally uses `TypedArray.prototype.every`.
 
 Complexity: O(length).
 
 -}
-all : (Int -> Int -> Bool) -> JsUint8ClampedArray -> Bool
+all : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
 all predicate array =
     Debug.crash "TODO"
 
 
 {-| Return `True` if at least one element satisfies the predicate.
 
-Internally uses `Uint8ClampedArray.prototype.some`.
+Internally uses `TypedArray.prototype.some`.
 
 Complexity: O(length).
 
 -}
-any : (Int -> Int -> Bool) -> JsUint8ClampedArray -> Bool
+any : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
 any predicate array =
     Debug.crash "TODO"
 
@@ -186,14 +195,12 @@ any predicate array =
 {-| Returns the index of the first element satisfying the predicate.
 
 If no element satisfies it, returns `Nothing`.
-The predicate is a function taking 2 arguments, an index and a value,
-and evaluates to True or False.
-Internally uses `Uint8ClampedArray.prototype.findIndex`.
+Internally uses `TypedArray.prototype.findIndex`.
 
 Complexity: O(length).
 
 -}
-find : (Int -> Int -> Bool) -> JsUint8ClampedArray -> Int
+find : (Int -> b -> Bool) -> JsTypedArray a b -> Int
 find predicate array =
     Debug.crash "TODO"
 
@@ -201,24 +208,24 @@ find predicate array =
 {-| Returns the index of the last element satisfying the predicate.
 
 See `find` for details.
-Internally uses `Uint8ClampedArray.prototype.lastIndexOf`.
+Internally uses `TypedArray.prototype.lastIndexOf`.
 
 Complexity: O(length).
 
 -}
-findLast : (Int -> Int -> Bool) -> JsUint8ClampedArray -> Int
+findLast : (Int -> b -> Bool) -> JsTypedArray a b -> Int
 findLast predicate array =
     Debug.crash "TODO"
 
 
 {-| Filter an array, keeping only elements satisfying the predicate.
 
-Internally uses `Uint8ClampedArray.prototype.filter`.
+Internally uses `TypedArray.prototype.filter`.
 
 Complexity: O(length).
 
 -}
-filter : (Int -> Int -> Bool) -> JsUint8ClampedArray -> JsUint8ClampedArray
+filter : (Int -> b -> Bool) -> JsTypedArray a b -> JsTypedArray a b
 filter predicate array =
     Debug.crash "TODO"
 
@@ -229,13 +236,13 @@ filter predicate array =
 
 {-| Extract a region of the array.
 
-Internally uses `Uint8ClampedArray.prototype.subarray`
+Internally uses `TypedArray.prototype.subarray`
 which reuses the same buffer, changing offset and length attributes.
 
 Complexity: O(1).
 
 -}
-extract : Int -> Int -> JsUint8ClampedArray -> JsUint8ClampedArray
+extract : Int -> Int -> JsTypedArray a b -> JsTypedArray a b
 extract start end array =
     Debug.crash "TODO"
 
@@ -246,72 +253,72 @@ extract start end array =
 
 {-| Replace a segment of the array by a constant value.
 
-Internally uses `Uint8ClampedArray.prototype.fill`.
+Internally uses `TypedArray.prototype.fill`.
 
 Complexity: O(length).
 
 -}
-replaceWithConstant : Int -> Int -> Int -> JsUint8ClampedArray -> JsUint8ClampedArray
+replaceWithConstant : Int -> Int -> b -> JsTypedArray a b -> JsTypedArray a b
 replaceWithConstant start end value array =
     Debug.crash "TODO"
 
 
 {-| Replace a segment of the array by another segment.
 
-Internally uses `Uint8ClampedArray.prototype.copyWithin`.
+Internally uses `TypedArray.prototype.copyWithin`.
 
 Complexity: O(length).
 
 -}
-copyWithin : Int -> Int -> Int -> JsUint8ClampedArray -> JsUint8ClampedArray
+copyWithin : Int -> Int -> Int -> JsTypedArray a b -> JsTypedArray a b
 copyWithin targetStart sourceStart sourceEnd array =
     Debug.crash "TODO"
 
 
 {-| Apply a function to every element of the array.
 
-Internally uses `Uint8ClampedArray.prototype.map`.
+Internally uses `TypedArray.prototype.map`.
 
 Complexity: O(length).
 
 -}
-map : (Int -> Int -> Int) -> JsUint8ClampedArray -> JsUint8ClampedArray
+map : (Int -> b -> b) -> JsTypedArray a b -> JsTypedArray a b
 map f array =
     Debug.crash "TODO"
 
 
 {-| Reverse the array.
 
-Internally uses `Uint8ClampedArray.prototype.reverse`.
+Internally uses `TypedArray.prototype.reverse`.
 
 Complexity: O(length).
 
 -}
-reverse : JsUint8ClampedArray -> JsUint8ClampedArray
+reverse : JsTypedArray a b -> JsTypedArray a b
 reverse array =
     Debug.crash "TODO"
 
 
 {-| Sort the array.
 
-Internally uses `Uint8ClampedArray.prototype.sort`.
+Internally uses `TypedArray.prototype.sort`.
 
 Complexity: depends on browser implementation.
 
 -}
-sort : JsUint8ClampedArray -> JsUint8ClampedArray
+sort : JsTypedArray a b -> JsTypedArray a b
 sort array =
     Debug.crash "TODO"
 
 
 {-| Sort the array in reverse order.
 
-Internally uses `Uint8ClampedArray.prototype.sort`.
+Internally uses `TypedArray.prototype.sort`.
 
 Complexity: depends on browser implementation.
 
 -}
-reverseSort : JsUint8ClampedArray -> JsUint8ClampedArray
+reverseSort : JsTypedArray a b -> JsTypedArray a b
 reverseSort array =
     Debug.crash "TODO"
 
@@ -322,35 +329,35 @@ reverseSort array =
 
 {-| Join array values in a string using the given separator.
 
-Internally uses `Uint8ClampedArray.prototype.join`.
+Internally uses `TypedArray.prototype.join`.
 
 Complexity: O(length).
 
 -}
-join : Char -> JsUint8ClampedArray -> String
+join : Char -> JsTypedArray a b -> String
 join separator array =
     Debug.crash "TODO"
 
 
 {-| Reduce the array from the left.
 
-Internally uses `Uint8ClampedArray.prototype.reduce`.
+Internally uses `TypedArray.prototype.reduce`.
 
 Complexity: O(length).
 
 -}
-foldl : (Int -> Int -> a -> a) -> a -> JsUint8ClampedArray -> a
+foldl : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
 foldl f acc array =
     Debug.crash "TODO"
 
 
 {-| Reduce the array from the right.
 
-Internally uses `Uint8ClampedArray.prototype.reduceRight`.
+Internally uses `TypedArray.prototype.reduceRight`.
 
 Complexity: O(length).
 
 -}
-foldr : (Int -> Int -> a -> a) -> a -> JsUint8ClampedArray -> a
+foldr : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
 foldr f acc array =
     Debug.crash "TODO"

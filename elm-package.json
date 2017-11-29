@@ -8,7 +8,8 @@
     ],
     "exposed-modules": [
         "JsArrayBuffer",
-        "JsUint8ClampedArray"
+        "JsTypedArray",
+        "JsUint8Array"
     ],
     "native-modules": true,
     "dependencies": {
