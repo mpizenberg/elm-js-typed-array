@@ -15,6 +15,12 @@ module JsUint8Array
 import Array exposing (Array)
 import JsArrayBuffer exposing (JsArrayBuffer)
 import JsTypedArray exposing (JsTypedArray, Uint8)
+import Native.JsUint8Array
+
+
+elementSize : Int
+elementSize =
+    1
 
 
 {-| Initialize an array of 0 of a given length.
@@ -26,7 +32,7 @@ Complexity: O(length).
 -}
 initialize : Int -> JsTypedArray Uint8 Int
 initialize length =
-    Debug.crash "TODO"
+    Native.JsUint8Array.initialize (max 0 length)
 
 
 {-| Initialize an array from a buffer.
@@ -36,9 +42,25 @@ Internally uses `new Uint8Array( buffer, byteOffset, length )`.
 Complexity: O(1).
 
 -}
-fromBuffer : Int -> Int -> JsArrayBuffer -> JsTypedArray Uint8 Int
+fromBuffer : Int -> Int -> JsArrayBuffer -> Result String (JsTypedArray Uint8 Int)
 fromBuffer byteOffset length buffer =
-    Debug.crash "TODO"
+    let
+        errorCase =
+            (byteOffset < 0)
+                || (length < 0)
+                || (byteOffset % elementSize /= 0)
+                || (byteOffset + elementSize * length > JsArrayBuffer.length buffer)
+    in
+    if byteOffset < 0 then
+        Err ("Negative offset: " ++ toString byteOffset)
+    else if length < 0 then
+        Err ("Negative length: " ++ toString length)
+    else if byteOffset % elementSize /= 0 then
+        Err ("Offset (" ++ toString byteOffset ++ ") not a multiple of element size in bytes:" ++ toString elementSize)
+    else if byteOffset + elementSize * length > JsArrayBuffer.length buffer then
+        Err "Overflows buffer size"
+    else
+        Ok (Native.JsUint8Array.fromBuffer byteOffset length buffer)
 
 
 {-| Initialize from an array of integers.

@@ -78,6 +78,7 @@ Reduce an array to a single value.
 -}
 
 import JsArrayBuffer exposing (JsArrayBuffer)
+import Native.JsTypedArray
 
 
 {-| `JsTypedArray a b` represents a [Javascript typed array][typed-array].
@@ -124,8 +125,8 @@ Complexity: O(1).
 
 -}
 length : JsTypedArray a b -> Int
-length array =
-    Debug.crash "TODO"
+length =
+    Native.JsTypedArray.length
 
 
 {-| Get the value at given index.
@@ -148,8 +149,8 @@ Complexity: O(1).
 
 -}
 buffer : JsTypedArray a b -> JsArrayBuffer
-buffer array =
-    Debug.crash "TODO"
+buffer =
+    Native.JsTypedArray.buffer
 
 
 {-| Get the offset (in bytes) from the start of its corresponding buffer.
@@ -160,8 +161,8 @@ Complexity: O(1).
 
 -}
 bufferOffset : JsTypedArray a b -> Int
-bufferOffset array =
-    Debug.crash "TODO"
+bufferOffset =
+    Native.JsTypedArray.bufferOffset
 
 
 
