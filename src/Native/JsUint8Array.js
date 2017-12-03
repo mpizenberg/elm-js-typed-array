@@ -9,8 +9,8 @@ function fromBuffer( byteOffset, length, buffer ) {
 }
 
 return {
-    initialize: initialize,
-    fromBuffer: F3(fromBuffer),
+	initialize: initialize,
+	fromBuffer: F3(fromBuffer),
 };
 
 }();

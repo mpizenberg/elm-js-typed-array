@@ -13,9 +13,9 @@ function slice( begin, end, arrayBuffer ) {
 }
 
 return {
-    initialize: initialize,
-    length: length,
-    slice: F3(slice),
+	initialize: initialize,
+	length: length,
+	slice: F3(slice),
 };
 
 }();
