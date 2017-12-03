@@ -26,7 +26,7 @@ negativeInt =
 
 maxLength : Int
 maxLength =
-    16000000 // elementSize
+    1000 // elementSize
 
 
 lengthFuzzer : Fuzzer Int

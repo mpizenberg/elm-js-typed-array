@@ -91,7 +91,7 @@ it may be `Uint8`, `Int32`, `Float64` etc.
 The second type parameter `b` is used to indicate which elm type is compatible
 with the data type in the array. Most probably, it will be `Int` or `Float`.
 
-Those type parameters (`a` and `b`) are fixed are the creation of the array.
+Those type parameters (`a` and `b`) are fixed at the creation of the array.
 For example, a function generating a Javascript `Uint8Array` will have the return type:
 `JsTypedArray Uint8 Int`.
 
@@ -177,8 +177,8 @@ Complexity: O(length).
 
 -}
 all : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
-all predicate array =
-    Debug.crash "TODO"
+all =
+    Native.JsTypedArray.all
 
 
 {-| Return `True` if at least one element satisfies the predicate.
@@ -189,8 +189,8 @@ Complexity: O(length).
 
 -}
 any : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
-any predicate array =
-    Debug.crash "TODO"
+any =
+    Native.JsTypedArray.any
 
 
 {-| Returns the index of the first element satisfying the predicate.

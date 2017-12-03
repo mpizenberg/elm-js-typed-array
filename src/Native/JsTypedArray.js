@@ -12,10 +12,22 @@ function bufferOffset( typedArray ) {
 	return typedArray.byteOffset;
 }
 
+function all( f, typedArray ) {
+	function flippedF( element, index ) { return A2( f, index, element ); }
+	return typedArray.every( flippedF );
+}
+
+function any( f, typedArray ) {
+	function flippedF( element, index ) { return A2( f, index, element ); }
+	return typedArray.some( flippedF );
+}
+
 return {
-    length: length,
-    buffer: buffer,
-    bufferOffset: bufferOffset,
+	length: length,
+	buffer: buffer,
+	bufferOffset: bufferOffset,
+	all: F2( all ),
+	any: F2( any ),
 };
 
 }();
