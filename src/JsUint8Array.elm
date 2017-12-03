@@ -44,13 +44,6 @@ Complexity: O(1).
 -}
 fromBuffer : Int -> Int -> JsArrayBuffer -> Result String (JsTypedArray Uint8 Int)
 fromBuffer byteOffset length buffer =
-    let
-        errorCase =
-            (byteOffset < 0)
-                || (length < 0)
-                || (byteOffset % elementSize /= 0)
-                || (byteOffset + elementSize * length > JsArrayBuffer.length buffer)
-    in
     if byteOffset < 0 then
         Err ("Negative offset: " ++ toString byteOffset)
     else if length < 0 then
