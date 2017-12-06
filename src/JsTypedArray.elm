@@ -285,8 +285,8 @@ Complexity: O(length).
 
 -}
 reverse : JsTypedArray a b -> JsTypedArray a b
-reverse array =
-    Debug.crash "TODO"
+reverse =
+    Native.JsTypedArray.reverse
 
 
 {-| Sort the array.

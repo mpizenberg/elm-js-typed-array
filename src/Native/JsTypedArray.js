@@ -36,6 +36,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return copiedTypedArray.map(flippedF);
   }
 
+  function reverse(typedArray) { return typedArray.reverse(); }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -45,6 +47,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     indexedAny : F2(indexedAny),
     findIndex : F2(findIndex),
     indexedMap : F2(indexedMap),
+    reverse : reverse,
   };
 }
 ();
