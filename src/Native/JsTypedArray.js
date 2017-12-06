@@ -54,6 +54,20 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
 
   function join(separator, typedArray) { return typedArray.join(separator); }
 
+  function indexedFoldl(f, initialValue, typedArray) {
+    function flippedF(previous, current, index) {
+      return A3(f, index, current, previous);
+    }
+    return typedArray.reduce(flippedF, initialValue);
+  }
+
+  function indexedFoldr(f, initialValue, typedArray) {
+    function flippedF(previous, current, index) {
+      return A3(f, index, current, previous);
+    }
+    return typedArray.reduceRight(flippedF, initialValue);
+  }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -67,6 +81,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     sort : sort,
     reverseSort : reverseSort,
     join : F2(join),
+    indexedFoldl : F3(indexedFoldl),
+    indexedFoldr : F3(indexedFoldr),
   };
 }
 ();

@@ -337,8 +337,8 @@ Complexity: O(length).
 
 -}
 indexedFoldl : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
-indexedFoldl f acc array =
-    Debug.crash "TODO"
+indexedFoldl =
+    Native.JsTypedArray.indexedFoldl
 
 
 {-| Reduce the array from the right.
@@ -349,5 +349,5 @@ Complexity: O(length).
 
 -}
 indexedFoldr : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
-indexedFoldr f acc array =
-    Debug.crash "TODO"
+indexedFoldr =
+    Native.JsTypedArray.indexedFoldr
