@@ -8,7 +8,6 @@ module JsTypedArray
         , copyWithin
         , extract
         , findIndex
-        , findLastIndex
         , getAt
         , indexedAll
         , indexedAny
@@ -51,7 +50,7 @@ Predicates here are functions taking an index, a value, and returning a boolean.
 (`Int -> b -> Bool`).
 The following functions use predicates to analyze typed arrays.
 
-@docs indexedAll, indexedAny, findIndex, findLastIndex, indexedFilter
+@docs indexedAll, indexedAny, findIndex, indexedFilter
 
 
 # Array Extraction
@@ -204,22 +203,9 @@ Internally uses `TypedArray.prototype.findIndex`.
 Complexity: O(length).
 
 -}
-findIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Int
-findIndex predicate array =
-    Debug.crash "TODO"
-
-
-{-| Returns the index of the last element satisfying the predicate.
-
-See `find` for details.
-Internally uses `TypedArray.prototype.lastIndexOf`.
-
-Complexity: O(length).
-
--}
-findLastIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Int
-findLastIndex predicate array =
-    Debug.crash "TODO"
+findIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Maybe Int
+findIndex =
+    Native.JsTypedArray.findIndex
 
 
 {-| Filter an array, keeping only elements satisfying the predicate.
