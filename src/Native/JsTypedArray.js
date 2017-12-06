@@ -46,6 +46,12 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return copiedTypedArray.sort();
   }
 
+  function reverseSort(typedArray) {
+    function greaterThan(x, y) { return (y - x); }
+    var copiedTypedArray = typedArray.slice();
+    return copiedTypedArray.sort(greaterThan);
+  }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -57,6 +63,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     indexedMap : F2(indexedMap),
     reverse : reverse,
     sort : sort,
+    reverseSort : reverseSort,
   };
 }
 ();

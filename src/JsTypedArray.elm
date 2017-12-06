@@ -309,8 +309,8 @@ Complexity: depends on browser implementation.
 
 -}
 reverseSort : JsTypedArray a b -> JsTypedArray a b
-reverseSort array =
-    Debug.crash "TODO"
+reverseSort =
+    Native.JsTypedArray.reverseSort
 
 
 
