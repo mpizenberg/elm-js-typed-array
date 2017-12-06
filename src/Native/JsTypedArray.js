@@ -36,7 +36,10 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return copiedTypedArray.map(flippedF);
   }
 
-  function reverse(typedArray) { return typedArray.reverse(); }
+  function reverse(typedArray) {
+    var copiedTypedArray = typedArray.slice();
+    return copiedTypedArray.reverse();
+  }
 
   return {
     length : length,
