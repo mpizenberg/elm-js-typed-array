@@ -52,6 +52,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return copiedTypedArray.sort(greaterThan);
   }
 
+  function join(separator, typedArray) { return typedArray.join(separator); }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -64,6 +66,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     reverse : reverse,
     sort : sort,
     reverseSort : reverseSort,
+    join : F2(join),
   };
 }
 ();

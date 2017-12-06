@@ -325,8 +325,8 @@ Complexity: O(length).
 
 -}
 join : Char -> JsTypedArray a b -> String
-join separator array =
-    Debug.crash "TODO"
+join =
+    Native.JsTypedArray.join
 
 
 {-| Reduce the array from the left.
