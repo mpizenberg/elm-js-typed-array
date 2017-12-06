@@ -297,8 +297,8 @@ Complexity: depends on browser implementation.
 
 -}
 sort : JsTypedArray a b -> JsTypedArray a b
-sort array =
-    Debug.crash "TODO"
+sort =
+    Native.JsTypedArray.sort
 
 
 {-| Sort the array in reverse order.

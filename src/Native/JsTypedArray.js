@@ -41,6 +41,11 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return copiedTypedArray.reverse();
   }
 
+  function sort(typedArray) {
+    var copiedTypedArray = typedArray.slice();
+    return copiedTypedArray.sort();
+  }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -51,6 +56,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     findIndex : F2(findIndex),
     indexedMap : F2(indexedMap),
     reverse : reverse,
+    sort : sort,
   };
 }
 ();
