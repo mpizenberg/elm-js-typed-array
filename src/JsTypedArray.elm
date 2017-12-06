@@ -3,21 +3,21 @@ module JsTypedArray
         ( Float64
         , JsTypedArray
         , Uint8
-        , all
-        , any
         , buffer
         , bufferOffset
         , copyWithin
         , extract
-        , filter
-        , find
-        , findLast
-        , foldl
-        , foldr
+        , findIndex
+        , findLastIndex
         , getAt
+        , indexedAll
+        , indexedAny
+        , indexedFilter
+        , indexedFoldl
+        , indexedFoldr
+        , indexedMap
         , join
         , length
-        , map
         , replaceWithConstant
         , reverse
         , reverseSort
@@ -51,7 +51,7 @@ Predicates here are functions taking an index, a value, and returning a boolean.
 (`Int -> b -> Bool`).
 The following functions use predicates to analyze typed arrays.
 
-@docs all, any, find, findLast, filter
+@docs indexedAll, indexedAny, findIndex, findLastIndex, indexedFilter
 
 
 # Array Extraction
@@ -66,14 +66,14 @@ All such transformations imply a full copy of the array
 to avoid side effects.
 Complexity is thus greater than O(length).
 
-@docs replaceWithConstant, copyWithin, map, reverse, sort, reverseSort
+@docs replaceWithConstant, copyWithin, indexedMap, reverse, sort, reverseSort
 
 
 # Array Reductions
 
 Reduce an array to a single value.
 
-@docs join, foldl, foldr
+@docs join, indexedFoldl, indexedFoldr
 
 -}
 
@@ -176,9 +176,9 @@ Internally uses `TypedArray.prototype.every`.
 Complexity: O(length).
 
 -}
-all : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
-all =
-    Native.JsTypedArray.all
+indexedAll : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
+indexedAll =
+    Native.JsTypedArray.indexedAll
 
 
 {-| Return `True` if at least one element satisfies the predicate.
@@ -188,9 +188,9 @@ Internally uses `TypedArray.prototype.some`.
 Complexity: O(length).
 
 -}
-any : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
-any =
-    Native.JsTypedArray.any
+indexedAny : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
+indexedAny =
+    Native.JsTypedArray.indexedAny
 
 
 {-| Returns the index of the first element satisfying the predicate.
@@ -201,8 +201,8 @@ Internally uses `TypedArray.prototype.findIndex`.
 Complexity: O(length).
 
 -}
-find : (Int -> b -> Bool) -> JsTypedArray a b -> Int
-find predicate array =
+findIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Int
+findIndex predicate array =
     Debug.crash "TODO"
 
 
@@ -214,8 +214,8 @@ Internally uses `TypedArray.prototype.lastIndexOf`.
 Complexity: O(length).
 
 -}
-findLast : (Int -> b -> Bool) -> JsTypedArray a b -> Int
-findLast predicate array =
+findLastIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Int
+findLastIndex predicate array =
     Debug.crash "TODO"
 
 
@@ -226,8 +226,8 @@ Internally uses `TypedArray.prototype.filter`.
 Complexity: O(length).
 
 -}
-filter : (Int -> b -> Bool) -> JsTypedArray a b -> JsTypedArray a b
-filter predicate array =
+indexedFilter : (Int -> b -> Bool) -> JsTypedArray a b -> JsTypedArray a b
+indexedFilter predicate array =
     Debug.crash "TODO"
 
 
@@ -283,8 +283,8 @@ Internally uses `TypedArray.prototype.map`.
 Complexity: O(length).
 
 -}
-map : (Int -> b -> b) -> JsTypedArray a b -> JsTypedArray a b
-map f array =
+indexedMap : (Int -> b -> b) -> JsTypedArray a b -> JsTypedArray a b
+indexedMap f array =
     Debug.crash "TODO"
 
 
@@ -347,8 +347,8 @@ Internally uses `TypedArray.prototype.reduce`.
 Complexity: O(length).
 
 -}
-foldl : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
-foldl f acc array =
+indexedFoldl : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
+indexedFoldl f acc array =
     Debug.crash "TODO"
 
 
@@ -359,6 +359,6 @@ Internally uses `TypedArray.prototype.reduceRight`.
 Complexity: O(length).
 
 -}
-foldr : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
-foldr f acc array =
+indexedFoldr : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
+indexedFoldr f acc array =
     Debug.crash "TODO"

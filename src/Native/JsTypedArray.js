@@ -6,12 +6,12 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
 
   function bufferOffset(typedArray) { return typedArray.byteOffset; }
 
-  function all(f, typedArray) {
+  function indexedAll(f, typedArray) {
     function flippedF(element, index) { return A2(f, index, element); }
     return typedArray.every(flippedF);
   }
 
-  function any(f, typedArray) {
+  function indexedAny(f, typedArray) {
     function flippedF(element, index) { return A2(f, index, element); }
     return typedArray.some(flippedF);
   }
@@ -20,8 +20,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     length : length,
     buffer : buffer,
     bufferOffset : bufferOffset,
-    all : F2(all),
-    any : F2(any),
+    indexedAll : F2(indexedAll),
+    indexedAny : F2(indexedAny),
   };
 }
 ();

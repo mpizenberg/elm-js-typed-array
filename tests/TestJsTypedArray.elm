@@ -1,7 +1,7 @@
 module TestJsTypedArray
     exposing
-        ( all
-        , any
+        ( indexedAll
+        , indexedAny
         )
 
 import Expect exposing (Expectation)
@@ -16,48 +16,48 @@ lengthFuzzer =
     Fuzz.intRange 0 1000
 
 
-all : Test
-all =
-    describe "all"
+indexedAll : Test
+indexedAll =
+    describe "indexedAll"
         [ test "Elements of empty array verify any predicate" <|
             \_ ->
                 JsUint8Array.initialize 0
-                    |> JsTypedArray.all (\_ _ -> False)
+                    |> JsTypedArray.indexedAll (\_ _ -> False)
                     |> Expect.true "Elements of empty array verify any predicate"
         , fuzz lengthFuzzer "True predicate on all elements returns True" <|
             \length ->
                 JsUint8Array.initialize length
-                    |> JsTypedArray.all (\_ _ -> True)
+                    |> JsTypedArray.indexedAll (\_ _ -> True)
                     |> Expect.true "True predicate on all elements returns True"
         , fuzz lengthFuzzer "Returns False if predicate returns False one time" <|
             \length ->
                 if length > 0 then
                     JsUint8Array.initialize length
-                        |> JsTypedArray.all (\id _ -> id /= length - 1)
+                        |> JsTypedArray.indexedAll (\id _ -> id /= length - 1)
                         |> Expect.false "Returns False if predicate returns False one time"
                 else
                     Expect.pass
         ]
 
 
-any : Test
-any =
-    describe "any"
+indexedAny : Test
+indexedAny =
+    describe "indexedAny"
         [ test "Empty array always returns false" <|
             \_ ->
                 JsUint8Array.initialize 0
-                    |> JsTypedArray.any (\_ _ -> True)
+                    |> JsTypedArray.indexedAny (\_ _ -> True)
                     |> Expect.false "Empty array always returns false"
         , fuzz lengthFuzzer "False if predicates evaluates False on all elements" <|
             \length ->
                 JsUint8Array.initialize length
-                    |> JsTypedArray.any (\_ _ -> False)
+                    |> JsTypedArray.indexedAny (\_ _ -> False)
                     |> Expect.false "False if predicates evaluates False on all elements"
         , fuzz lengthFuzzer "Returns True if predicate returns True one time" <|
             \length ->
                 if length > 0 then
                     JsUint8Array.initialize length
-                        |> JsTypedArray.any (\id _ -> id == length - 1)
+                        |> JsTypedArray.indexedAny (\id _ -> id == length - 1)
                         |> Expect.true "Returns False if predicate returns False one time"
                 else
                     Expect.pass
