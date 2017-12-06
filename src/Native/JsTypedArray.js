@@ -2,6 +2,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
 
   function length(typedArray) { return typedArray.length; }
 
+  function getAt(index, typedArray) { return typedArray[index]; }
+
   function buffer(typedArray) { return typedArray.buffer; }
 
   function bufferOffset(typedArray) { return typedArray.byteOffset; }
@@ -18,6 +20,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
 
   return {
     length : length,
+    getAt : F2(getAt),
     buffer : buffer,
     bufferOffset : bufferOffset,
     indexedAll : F2(indexedAll),

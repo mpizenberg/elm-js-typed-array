@@ -138,7 +138,10 @@ Complexity: O(1).
 -}
 getAt : Int -> JsTypedArray a b -> Maybe b
 getAt index array =
-    Debug.crash "TODO"
+    if 0 <= index && index < length array then
+        Just (Native.JsTypedArray.getAt index array)
+    else
+        Nothing
 
 
 {-| Get the underlying data buffer of the array.
