@@ -273,8 +273,8 @@ Complexity: O(length).
 
 -}
 indexedMap : (Int -> b -> b) -> JsTypedArray a b -> JsTypedArray a b
-indexedMap f array =
-    Debug.crash "TODO"
+indexedMap =
+    Native.JsTypedArray.indexedMap
 
 
 {-| Reverse the array.

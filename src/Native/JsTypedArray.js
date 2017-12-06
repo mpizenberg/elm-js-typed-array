@@ -30,6 +30,12 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     }
   }
 
+  function indexedMap(f, typedArray) {
+    function flippedF(element, index) { return A2(f, index, element); }
+    var copiedTypedArray = typedArray.slice();
+    return copiedTypedArray.map(flippedF);
+  }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -38,6 +44,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     indexedAll : F2(indexedAll),
     indexedAny : F2(indexedAny),
     findIndex : F2(findIndex),
+    indexedMap : F2(indexedMap),
   };
 }
 ();
