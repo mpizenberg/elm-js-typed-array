@@ -67,4 +67,4 @@ fromArray array =
 -}
 fromList : List Int -> JsTypedArray Uint8 Int
 fromList list =
-    Debug.crash "TODO"
+    Native.JsUint8Array.fromList (List.length list) list
