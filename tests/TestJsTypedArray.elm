@@ -1,6 +1,8 @@
 module TestJsTypedArray
     exposing
         ( extract
+        , findIndex
+        , getAt
         , indexedAll
         , indexedAny
         , indexedMap
@@ -89,6 +91,39 @@ indexedMap =
                     |> JsTypedArray.indexedMap (\id _ -> id)
                     |> JsTypedArray.indexedAll (\id value -> id % 256 == value)
                     |> Expect.true "All values set to index"
+        ]
+
+
+getAt : Test
+getAt =
+    describe "getAt"
+        [ fuzz2 lengthFuzzer Fuzz.int "Get value at random index" <|
+            \length index ->
+                if 0 <= index && index < length then
+                    JsUint8Array.initialize length
+                        |> JsTypedArray.indexedMap (\id _ -> id)
+                        |> JsTypedArray.getAt index
+                        |> Expect.equal (Just <| index % 256)
+                else
+                    JsUint8Array.initialize length
+                        |> JsTypedArray.getAt index
+                        |> Expect.equal Nothing
+        ]
+
+
+findIndex : Test
+findIndex =
+    describe "findIndex"
+        [ fuzz2 lengthFuzzer Fuzz.int "Find at random index" <|
+            \length index ->
+                if 0 <= index && index < length then
+                    JsUint8Array.initialize length
+                        |> JsTypedArray.findIndex (\id _ -> id == index)
+                        |> Expect.equal (Just index)
+                else
+                    JsUint8Array.initialize length
+                        |> JsTypedArray.findIndex (\id _ -> id == index)
+                        |> Expect.equal Nothing
         ]
 
 
