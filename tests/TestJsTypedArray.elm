@@ -167,15 +167,13 @@ extract =
 
 replaceWithConstant : Test
 replaceWithConstant =
-    describe "replaceWithConstant"
-        [ fuzz4 lengthFuzzer Fuzz.int Fuzz.int Fuzz.int "Replace with constant at correct indices" <|
-            \length start end constant ->
-                JsUint8Array.initialize length
-                    |> JsTypedArray.replaceWithConstant start end constant
-                    |> JsTypedArray.extract start end
-                    |> JsTypedArray.indexedAll (\_ value -> value == constant % 256)
-                    |> Expect.true "Replaced value are correct"
-        ]
+    fuzz4 lengthFuzzer Fuzz.int Fuzz.int Fuzz.int "replaceWithConstant" <|
+        \length start end constant ->
+            JsUint8Array.initialize length
+                |> JsTypedArray.replaceWithConstant start end constant
+                |> JsTypedArray.extract start end
+                |> JsTypedArray.indexedAll (\_ value -> value == constant % 256)
+                |> Expect.true "Replaced value are correct"
 
 
 reverse : Test
