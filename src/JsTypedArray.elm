@@ -233,8 +233,8 @@ Complexity: O(1).
 
 -}
 extract : Int -> Int -> JsTypedArray a b -> JsTypedArray a b
-extract start end array =
-    Debug.crash "TODO"
+extract =
+    Native.JsTypedArray.extract
 
 
 

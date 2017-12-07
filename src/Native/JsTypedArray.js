@@ -35,6 +35,10 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return typedArray.filter(flippedF);
   }
 
+  function extract(start, end, typedArray) {
+    return typedArray.subarray(start, end);
+  }
+
   function indexedMap(f, typedArray) {
     function flippedF(element, index) { return A2(f, index, element); }
     var copiedTypedArray = typedArray.slice();
@@ -82,6 +86,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     indexedAny : F2(indexedAny),
     findIndex : F2(findIndex),
     indexedFilter : F2(indexedFilter),
+    extract : F3(extract),
     indexedMap : F2(indexedMap),
     reverse : reverse,
     sort : sort,
