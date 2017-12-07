@@ -5,6 +5,7 @@ module TestJsTypedArray
         , getAt
         , indexedAll
         , indexedAny
+        , indexedFilter
         , indexedMap
         , replaceWithConstant
         , reverse
@@ -129,6 +130,24 @@ findIndex =
                     JsUint8Array.initialize length
                         |> JsTypedArray.findIndex (\id _ -> id == index)
                         |> Expect.equal Nothing
+        ]
+
+
+indexedFilter : Test
+indexedFilter =
+    describe "indexedFilter"
+        [ fuzz2 lengthFuzzer Fuzz.int "Filter out big indices" <|
+            \length index ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.indexedFilter (\id _ -> id < index)
+                    |> JsTypedArray.length
+                    |> Expect.equal (max 0 (min length index))
+        , fuzz2 lengthFuzzer Fuzz.int "Filter out small indices" <|
+            \length index ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.indexedFilter (\id _ -> id >= index)
+                    |> JsTypedArray.length
+                    |> Expect.equal (length - max 0 (min length index))
         ]
 
 
