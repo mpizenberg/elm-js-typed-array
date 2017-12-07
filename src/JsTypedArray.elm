@@ -5,7 +5,6 @@ module JsTypedArray
         , Uint8
         , buffer
         , bufferOffset
-        , copyWithin
         , extract
         , findIndex
         , getAt
@@ -65,7 +64,7 @@ All such transformations imply a full copy of the array
 to avoid side effects.
 Complexity is thus greater than O(length).
 
-@docs replaceWithConstant, copyWithin, indexedMap, reverse, sort, reverseSort
+@docs replaceWithConstant, indexedMap, reverse, sort, reverseSort
 
 
 # Array Reductions
@@ -251,18 +250,6 @@ Complexity: O(length).
 replaceWithConstant : Int -> Int -> b -> JsTypedArray a b -> JsTypedArray a b
 replaceWithConstant =
     Native.JsTypedArray.replaceWithConstant
-
-
-{-| Replace a segment of the array by another segment.
-
-Internally uses `TypedArray.prototype.copyWithin`.
-
-Complexity: O(length).
-
--}
-copyWithin : Int -> Int -> Int -> JsTypedArray a b -> JsTypedArray a b
-copyWithin targetStart sourceStart sourceEnd array =
-    Debug.crash "TODO"
 
 
 {-| Apply a function to every element of the array.
