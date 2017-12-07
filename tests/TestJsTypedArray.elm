@@ -6,6 +6,7 @@ module TestJsTypedArray
         , indexedAll
         , indexedAny
         , indexedMap
+        , replaceWithConstant
         )
 
 import Expect exposing (Expectation)
@@ -157,4 +158,17 @@ extract =
                 in
                 JsTypedArray.extract start end typedArray
                     |> Expect.equal (JsTypedArray.extract correctStart correctEnd typedArray)
+        ]
+
+
+replaceWithConstant : Test
+replaceWithConstant =
+    describe "replaceWithConstant"
+        [ fuzz4 lengthFuzzer Fuzz.int Fuzz.int Fuzz.int "Replace with constant at correct indices" <|
+            \length start end constant ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.replaceWithConstant start end constant
+                    |> JsTypedArray.extract start end
+                    |> JsTypedArray.indexedAll (\_ value -> value == constant % 256)
+                    |> Expect.true "Replaced value are correct"
         ]
