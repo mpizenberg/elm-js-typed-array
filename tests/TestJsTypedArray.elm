@@ -7,6 +7,9 @@ module TestJsTypedArray
         , indexedAny
         , indexedMap
         , replaceWithConstant
+        , reverse
+        , reverseSort
+        , sort
         )
 
 import Expect exposing (Expectation)
@@ -14,6 +17,7 @@ import Fuzz exposing (Fuzzer)
 import JsTypedArray
 import JsUint8Array
 import Test exposing (..)
+import TestFuzz
 
 
 lengthFuzzer : Fuzzer Int
@@ -172,3 +176,49 @@ replaceWithConstant =
                     |> JsTypedArray.indexedAll (\_ value -> value == constant % 256)
                     |> Expect.true "Replaced value are correct"
         ]
+
+
+reverse : Test
+reverse =
+    describe "reverse"
+        [ fuzz TestFuzz.jsUint8Array "Reversed list has same length than original list" <|
+            \typedArray ->
+                JsTypedArray.reverse typedArray
+                    |> JsTypedArray.length
+                    |> Expect.equal (JsTypedArray.length typedArray)
+        , fuzz TestFuzz.jsUint8Array "Reverse is a symmetric application" <|
+            \typedArray ->
+                typedArray
+                    |> JsTypedArray.reverse
+                    |> JsTypedArray.reverse
+                    |> Expect.equal typedArray
+        ]
+
+
+sort : Test
+sort =
+    describe "sort"
+        [ fuzz TestFuzz.jsUint8Array "Sorting keep array length" <|
+            \typedArray ->
+                JsTypedArray.reverse typedArray
+                    |> JsTypedArray.length
+                    |> Expect.equal (JsTypedArray.length typedArray)
+        , fuzz TestFuzz.jsUint8Array "Sorting is idempotent" <|
+            \typedArray ->
+                let
+                    sortedArray =
+                        JsTypedArray.sort typedArray
+                in
+                JsTypedArray.sort sortedArray
+                    |> Expect.equal sortedArray
+        ]
+
+
+reverseSort : Test
+reverseSort =
+    fuzz TestFuzz.jsUint8Array "Reverse sort equals sort then reverse" <|
+        \typedArray ->
+            typedArray
+                |> JsTypedArray.sort
+                |> JsTypedArray.reverse
+                |> Expect.equal (JsTypedArray.reverseSort typedArray)
