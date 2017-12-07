@@ -249,8 +249,8 @@ Complexity: O(length).
 
 -}
 replaceWithConstant : Int -> Int -> b -> JsTypedArray a b -> JsTypedArray a b
-replaceWithConstant start end value array =
-    Debug.crash "TODO"
+replaceWithConstant =
+    Native.JsTypedArray.replaceWithConstant
 
 
 {-| Replace a segment of the array by another segment.

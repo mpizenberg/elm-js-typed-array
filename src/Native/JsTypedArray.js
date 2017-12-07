@@ -39,6 +39,11 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return typedArray.subarray(start, end);
   }
 
+  function replaceWithConstant(start, end, constant, typedArray) {
+    var copiedTypedArray = typedArray.slice();
+    return copiedTypedArray.fill(constant, start, end);
+  }
+
   function indexedMap(f, typedArray) {
     function flippedF(element, index) { return A2(f, index, element); }
     var copiedTypedArray = typedArray.slice();
@@ -87,6 +92,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     findIndex : F2(findIndex),
     indexedFilter : F2(indexedFilter),
     extract : F3(extract),
+    replaceWithConstant : F4(replaceWithConstant),
     indexedMap : F2(indexedMap),
     reverse : reverse,
     sort : sort,
