@@ -216,8 +216,8 @@ Complexity: O(length).
 
 -}
 indexedFilter : (Int -> b -> Bool) -> JsTypedArray a b -> JsTypedArray a b
-indexedFilter predicate array =
-    Debug.crash "TODO"
+indexedFilter =
+    Native.JsTypedArray.indexedFilter
 
 
 
