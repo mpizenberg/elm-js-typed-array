@@ -6,6 +6,8 @@ module TestJsTypedArray
         , indexedAll
         , indexedAny
         , indexedFilter
+        , indexedFoldl
+        , indexedFoldr
         , indexedMap
         , replaceWithConstant
         , reverse
@@ -239,3 +241,48 @@ reverseSort =
                 |> JsTypedArray.sort
                 |> JsTypedArray.reverse
                 |> Expect.equal (JsTypedArray.reverseSort typedArray)
+
+
+indexedFoldl : Test
+indexedFoldl =
+    describe "indexedFoldl"
+        [ fuzz lengthFuzzer "Length equals fold with (+1)" <|
+            \length ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.indexedFoldl (\_ _ v -> v + 1) 0
+                    |> Expect.equal length
+        , fuzz lengthFuzzer "Sum of zeros equals zero" <|
+            \length ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.indexedFoldl (\_ v sum -> sum + v) 0
+                    |> Expect.equal 0
+        , fuzz TestFuzz.jsUint8Array "Cons foldl equals reverse" <|
+            \typedArray ->
+                typedArray
+                    |> JsTypedArray.indexedFoldl (always (::)) []
+                    |> JsUint8Array.fromList
+                    |> JsTypedArray.reverse
+                    |> Expect.equal typedArray
+        ]
+
+
+indexedFoldr : Test
+indexedFoldr =
+    describe "indexedFoldr"
+        [ fuzz lengthFuzzer "Length equals fold with (+1)" <|
+            \length ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.indexedFoldr (\_ _ v -> v + 1) 0
+                    |> Expect.equal length
+        , fuzz lengthFuzzer "Sum of zeros equals zero" <|
+            \length ->
+                JsUint8Array.initialize length
+                    |> JsTypedArray.indexedFoldr (\_ v sum -> sum + v) 0
+                    |> Expect.equal 0
+        , fuzz TestFuzz.jsUint8Array "Cons foldr equals identity" <|
+            \typedArray ->
+                typedArray
+                    |> JsTypedArray.indexedFoldr (always (::)) []
+                    |> JsUint8Array.fromList
+                    |> Expect.equal typedArray
+        ]
