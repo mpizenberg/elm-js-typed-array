@@ -14,6 +14,7 @@ module JsTypedArray
         , indexedFoldl
         , indexedFoldr
         , indexedMap
+        , indexedMap2
         , join
         , length
         , replaceWithConstant
@@ -64,7 +65,7 @@ All such transformations imply a full copy of the array
 to avoid side effects.
 Complexity is thus greater than O(length).
 
-@docs replaceWithConstant, indexedMap, reverse, sort, reverseSort
+@docs replaceWithConstant, indexedMap, indexedMap2, reverse, sort, reverseSort
 
 
 # Array Reductions
@@ -262,6 +263,26 @@ Complexity: O(length).
 indexedMap : (Int -> b -> b) -> JsTypedArray a b -> JsTypedArray a b
 indexedMap =
     Native.JsTypedArray.indexedMap
+
+
+{-| Apply a function to every element of two arrays to form a new one.
+
+Complexity: O(length).
+
+-}
+indexedMap2 : (Int -> b -> b -> b) -> JsTypedArray a b -> JsTypedArray a b -> JsTypedArray a b
+indexedMap2 f typedArray1 typedArray2 =
+    let
+        newLength =
+            min (length typedArray1) (length typedArray2)
+
+        newArray1 =
+            extract 0 newLength typedArray1
+
+        newArray2 =
+            extract 0 newLength typedArray2
+    in
+    Native.JsTypedArray.indexedMap2 f newArray1 newArray2
 
 
 {-| Reverse the array.
