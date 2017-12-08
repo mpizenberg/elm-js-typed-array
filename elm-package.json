@@ -9,6 +9,7 @@
     "exposed-modules": [
         "JsArrayBuffer",
         "JsTypedArray",
+        "JsFloat64Array",
         "JsUint8Array"
     ],
     "native-modules": true,
