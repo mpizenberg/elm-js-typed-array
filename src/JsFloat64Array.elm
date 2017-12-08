@@ -6,7 +6,12 @@ module JsFloat64Array
         , initialize
         )
 
-{-| Provides functions to initialize JS `Float64Array`.
+{-| Provides functions to initialize JavaScript [`Float64Array`][Float64Array].
+
+Those functions return arrays of type `JsTypedArray Float64 Float`
+that can then be manipulated with the `JsTypedArray` module.
+
+[Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
 @docs initialize, fromBuffer, fromArray, fromList
 
@@ -23,11 +28,13 @@ elementSize =
     8
 
 
-{-| Initialize an array of 0 of a given length.
-
+{-| Initialize an array of zeros of a given length.
 Internally uses `new Float64Array( length )`.
 
 Complexity: O(length).
+
+    JsFloat64Array.initialize 3
+    --> { 0 = 0, 1 = 0, 2 = 0 } : JsTypedArray Float64 Float
 
 -}
 initialize : Int -> JsTypedArray Float64 Float
@@ -35,11 +42,34 @@ initialize length =
     Native.JsFloat64Array.initialize (max 0 length)
 
 
-{-| Initialize an array from a buffer.
-
+{-| Initialize an array from a buffer at a given offset (in bytes), of a given length.
 Internally uses `new Float64Array( buffer, byteOffset, length )`.
 
 Complexity: O(1).
+
+    JsArrayBuffer.initialize (3 * 8)
+        |> JsFloat64Array.fromBuffer 0 3
+    --> Ok { 0 = 0, 1 = 0, 2 = 0 }
+
+    JsArrayBuffer.initialize (3 * 8)
+        |> JsFloat64Array.fromBuffer -1 3
+    --> Err "Negative offset: -1"
+
+    JsArrayBuffer.initialize (3 * 8)
+        |> JsFloat64Array.fromBuffer 0 -2
+    --> Err "Negative length: -2"
+
+    JsArrayBuffer.initialize (3 * 8)
+        |> JsFloat64Array.fromBuffer 1 2
+    --> Err "Provided offset (1) not a multiple of element size in bytes (8)"
+
+    JsArrayBuffer.initialize (3 * 8)
+        |> JsFloat64Array.fromBuffer (1*8) 3
+    --> Err "Overflows buffer size (24 bytes)"
+
+    JsArrayBuffer.initialize (3 * 8)
+        |> JsFloat64Array.fromBuffer (1*8) 2
+    --> Ok { 0 = 0, 1 = 0 }
 
 -}
 fromBuffer : Int -> Int -> JsArrayBuffer -> Result String (JsTypedArray Float64 Float)
@@ -63,7 +93,13 @@ fromArray array =
     Debug.crash "TODO"
 
 
-{-| Initialize from a list of integers.
+{-| Initialize from a list of floats.
+
+Complexity: O(length).
+
+    JsFloat64Array.fromList [0.5, 14.5, 42.5]
+    --> { 0 = 0.5, 1 = 14.5, 2 = 42.5 }
+
 -}
 fromList : List Float -> JsTypedArray Float64 Float
 fromList list =

@@ -6,8 +6,10 @@ module JsArrayBuffer
         , slice
         )
 
-{-| This module is wrapping native javascript ArrayBuffer.
+{-| This module is wrapping javascript [ArrayBuffer].
 
+Array buffers are basic bytes arrays that have to be manipulated
+through views (like Uint8Array, Float64Array, etc.).
 [ArrayBuffer] documentation is available on MDN web docs.
 
 [ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
