@@ -12,7 +12,9 @@ module JsTypedArray
         , indexedAny
         , indexedFilter
         , indexedFoldl
+        , indexedFoldl2
         , indexedFoldr
+        , indexedFoldr2
         , indexedMap
         , indexedMap2
         , join
@@ -72,7 +74,7 @@ Complexity is thus greater than O(length).
 
 Reduce an array to a single value.
 
-@docs join, indexedFoldl, indexedFoldr
+@docs join, indexedFoldl, indexedFoldr, indexedFoldl2, indexedFoldr2
 
 -}
 
@@ -359,3 +361,43 @@ Complexity: O(length).
 indexedFoldr : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
 indexedFoldr =
     Native.JsTypedArray.indexedFoldr
+
+
+{-| Reduce two arrays from the left.
+
+Complexity: O(length).
+
+-}
+indexedFoldl2 : (Int -> b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
+indexedFoldl2 f initialValue typedArray1 typedArray2 =
+    let
+        newLength =
+            min (length typedArray1) (length typedArray2)
+
+        newArray1 =
+            extract 0 newLength typedArray1
+
+        newArray2 =
+            extract 0 newLength typedArray2
+    in
+    Native.JsTypedArray.indexedFoldl2 f initialValue newArray1 newArray2
+
+
+{-| Reduce two arrays from the right.
+
+Complexity: O(length).
+
+-}
+indexedFoldr2 : (Int -> b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
+indexedFoldr2 f initialValue typedArray1 typedArray2 =
+    let
+        newLength =
+            min (length typedArray1) (length typedArray2)
+
+        newArray1 =
+            extract 0 newLength typedArray1
+
+        newArray2 =
+            extract 0 newLength typedArray2
+    in
+    Native.JsTypedArray.indexedFoldr2 f initialValue newArray1 newArray2

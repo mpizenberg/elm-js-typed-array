@@ -90,6 +90,20 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     return typedArray.reduceRight(flippedF, initialValue);
   }
 
+  function indexedFoldl2(f, initialValue, typedArray1, typedArray2) {
+    function newF(accumulated, current, index) {
+      return A4(f, index, current, typedArray2[index], accumulated);
+    }
+    return typedArray1.reduce(newF, initialValue);
+  }
+
+  function indexedFoldr2(f, initialValue, typedArray1, typedArray2) {
+    function newF(accumulated, current, index) {
+      return A4(f, index, current, typedArray2[index], accumulated);
+    }
+    return typedArray1.reduceRight(newF, initialValue);
+  }
+
   return {
     length : length,
     getAt : F2(getAt),
@@ -109,6 +123,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = function() {
     join : F2(join),
     indexedFoldl : F3(indexedFoldl),
     indexedFoldr : F3(indexedFoldr),
+    indexedFoldl2 : F4(indexedFoldl2),
+    indexedFoldr2 : F4(indexedFoldr2),
   };
 }
 ();
