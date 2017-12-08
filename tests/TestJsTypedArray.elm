@@ -9,6 +9,8 @@ module TestJsTypedArray
         , indexedFoldl
         , indexedFoldr
         , indexedMap
+        , indexedMap2
+        , join
         , replaceWithConstant
         , reverse
         , reverseSort
@@ -19,6 +21,7 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
 import JsTypedArray
 import JsUint8Array
+import String
 import Test exposing (..)
 import TestFuzz
 
@@ -99,6 +102,48 @@ indexedMap =
                     |> JsTypedArray.indexedMap (\id _ -> id)
                     |> JsTypedArray.indexedAll (\id value -> id % 256 == value)
                     |> Expect.true "All values set to index"
+        ]
+
+
+indexedMap2 : Test
+indexedMap2 =
+    describe "indexedMap2"
+        [ fuzz2 lengthFuzzer lengthFuzzer "Result has length of smaller array" <|
+            \l1 l2 ->
+                let
+                    typedArray1 =
+                        JsUint8Array.initialize l1
+
+                    typedArray2 =
+                        JsUint8Array.initialize l2
+
+                    resultArray =
+                        JsTypedArray.indexedMap2 (\_ _ _ -> 42) typedArray1 typedArray2
+                in
+                JsTypedArray.length resultArray
+                    |> Expect.equal (min l1 l2)
+        , fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Map2 which keep only first array ok" <|
+            \typedArray1 typedArray2 ->
+                let
+                    length1 =
+                        JsTypedArray.length typedArray1
+
+                    length2 =
+                        JsTypedArray.length typedArray2
+                in
+                JsTypedArray.indexedMap2 (\_ first _ -> first) typedArray1 typedArray2
+                    |> Expect.equal (JsTypedArray.extract 0 (min length1 length2) typedArray1)
+        , fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Map2 which keep only second array ok" <|
+            \typedArray1 typedArray2 ->
+                let
+                    length1 =
+                        JsTypedArray.length typedArray1
+
+                    length2 =
+                        JsTypedArray.length typedArray2
+                in
+                JsTypedArray.indexedMap2 (\_ _ second -> second) typedArray1 typedArray2
+                    |> Expect.equal (JsTypedArray.extract 0 (min length1 length2) typedArray2)
         ]
 
 
@@ -285,4 +330,33 @@ indexedFoldr =
                     |> JsTypedArray.indexedFoldr (always (::)) []
                     |> JsUint8Array.fromList
                     |> Expect.equal typedArray
+        ]
+
+
+join : Test
+join =
+    describe "join"
+        [ fuzz TestFuzz.jsUint8Array "Joining is equal to fold with string concatenation" <|
+            \typedArray ->
+                let
+                    separator =
+                        ','
+
+                    joinedArray : String
+                    joinedArray =
+                        JsTypedArray.join separator typedArray
+
+                    accFunction : Int -> a -> List String -> List String
+                    accFunction _ num numStrList =
+                        if List.isEmpty numStrList then
+                            [ toString num ]
+                        else
+                            toString num :: String.fromChar separator :: numStrList
+
+                    foldedArray : List String
+                    foldedArray =
+                        JsTypedArray.indexedFoldr accFunction [] typedArray
+                in
+                joinedArray
+                    |> Expect.equal (String.concat foldedArray)
         ]
