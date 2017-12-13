@@ -23,6 +23,7 @@ module JsTypedArray
         , reverse
         , reverseSort
         , sort
+        , unsafeGetAt
         )
 
 {-| This module wraps JavaScript typed arrays in elm.
@@ -43,7 +44,7 @@ in the `JsUint8Array` module.
 
 # Basic Requests
 
-@docs length, getAt, buffer, bufferOffset
+@docs length, getAt, unsafeGetAt, buffer, bufferOffset
 
 
 # Predicates
@@ -154,6 +155,15 @@ getAt index array =
         Just (Native.JsTypedArray.getAt index array)
     else
         Nothing
+
+
+{-| Same as `getAt` but unsafe.
+Return JS undefined if index is outside of bounds.
+Only useful if performance is required.
+-}
+unsafeGetAt : Int -> JsTypedArray a b -> b
+unsafeGetAt index array =
+    Native.JsTypedArray.getAt index array
 
 
 {-| Get the underlying data buffer of the array.
