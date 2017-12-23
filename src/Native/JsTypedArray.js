@@ -125,6 +125,14 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return typedArray1.reduceRight(newF, initialValue);
   }
 
+  function foldlr(f, initialValue, typedArray1, typedArray2) {
+    const lastIndex = typedArray2.length - 1;
+    function newF(accumulated, current, index) {
+      return A3(f, current, typedArray2[lastIndex - index], accumulated);
+    }
+    return typedArray1.reduce(newF, initialValue);
+  }
+
   return {
     length: length,
     getAt: F2(getAt),
@@ -145,6 +153,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     indexedFoldl: F3(indexedFoldl),
     indexedFoldr: F3(indexedFoldr),
     indexedFoldl2: F4(indexedFoldl2),
-    indexedFoldr2: F4(indexedFoldr2)
+    indexedFoldr2: F4(indexedFoldr2),
+    foldlr: F4(foldlr)
   };
 })();

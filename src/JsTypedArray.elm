@@ -7,6 +7,7 @@ module JsTypedArray
         , bufferOffset
         , extract
         , findIndex
+        , foldlr
         , getAt
         , indexedAll
         , indexedAny
@@ -75,7 +76,7 @@ Complexity is thus greater than O(length).
 
 Reduce an array to a single value.
 
-@docs join, indexedFoldl, indexedFoldr, indexedFoldl2, indexedFoldr2
+@docs join, indexedFoldl, indexedFoldr, indexedFoldl2, indexedFoldr2, foldlr
 
 -}
 
@@ -536,12 +537,44 @@ Complexity: O(length).
         JsUint8Array.fromList [0, 14, 42, 10000]
 
     toZipList array1 array2
-    --> [(0,0),(1,14),(2,42)]
+    --> [(0,14),(1,42),(2,1000)]
 
 -}
 indexedFoldr2 : (Int -> b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
 indexedFoldr2 f initialValue typedArray1 typedArray2 =
     let
+        length1 =
+            length typedArray1
+
+        length2 =
+            length typedArray2
+
+        newLength =
+            min length1 length2
+
+        newArray1 =
+            extract (length1 - newLength) length1 typedArray1
+
+        newArray2 =
+            extract (length2 - newLength) length2 typedArray2
+    in
+    Native.JsTypedArray.indexedFoldr2 f initialValue newArray1 newArray2
+
+
+{-| Reduce two arrays, first from left, second from right
+The longer array is troncated at the size of the smaller one.
+
+Complexity: O(length).
+
+TODO: example + tests
+
+-}
+foldlr : (b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
+foldlr f initialValue typedArray1 typedArray2 =
+    let
+        length2 =
+            length typedArray2
+
         newLength =
             min (length typedArray1) (length typedArray2)
 
@@ -549,6 +582,6 @@ indexedFoldr2 f initialValue typedArray1 typedArray2 =
             extract 0 newLength typedArray1
 
         newArray2 =
-            extract 0 newLength typedArray2
+            extract (length2 - newLength) length2 typedArray2
     in
-    Native.JsTypedArray.indexedFoldr2 f initialValue newArray1 newArray2
+    Native.JsTypedArray.foldlr f initialValue newArray1 newArray2
