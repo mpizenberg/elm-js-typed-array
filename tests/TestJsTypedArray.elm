@@ -379,11 +379,14 @@ indexedFoldr2 =
                     length2 =
                         JsTypedArray.length typedArray2
 
+                    newLength =
+                        min length1 length2
+
                     newArray1 =
-                        JsTypedArray.extract 0 (min length1 length2) typedArray1
+                        JsTypedArray.extract (length1 - newLength) length1 typedArray1
 
                     newArray2 =
-                        JsTypedArray.extract 0 (min length1 length2) typedArray2
+                        JsTypedArray.extract (length2 - newLength) length2 typedArray2
 
                     foldedFirst =
                         JsTypedArray.indexedFoldr2 (\_ v1 _ acc -> v1 + acc) 0 typedArray1 typedArray2
