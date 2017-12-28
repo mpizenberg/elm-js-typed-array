@@ -72,16 +72,14 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     function flippedF(element, index) {
       return A2(f, index, element);
     }
-    var copiedTypedArray = typedArray.slice();
-    return copiedTypedArray.map(flippedF);
+    return typedArray.map(flippedF);
   }
 
   function indexedMap2(f, typedArray1, typedArray2) {
-    var copy1 = typedArray1.slice();
     function newF(element, index) {
       return A3(f, index, element, typedArray2[index]);
     }
-    return copy1.map(newF);
+    return typedArray1.map(newF);
   }
 
   function reverse(typedArray) {
