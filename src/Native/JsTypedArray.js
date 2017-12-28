@@ -68,18 +68,40 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return copiedTypedArray.fill(constant, start, end);
   }
 
-  function indexedMap(f, typedArray) {
-    function flippedF(element, index) {
-      return A2(f, index, element);
+  function map(f, typedArray) {
+    var length = typedArray.length;
+    var newTypedArray = new typedArray.constructor(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = f(typedArray[i]);
     }
-    return typedArray.map(flippedF);
+    return newTypedArray;
+  }
+
+  function map2(f, typedArray1, typedArray2) {
+    var length = typedArray1.length;
+    var newTypedArray = new typedArray1.constructor(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = A2(f, typedArray1[i], typedArray2[i]);
+    }
+    return newTypedArray;
+  }
+
+  function indexedMap(f, typedArray) {
+    var length = typedArray.length;
+    var newTypedArray = new typedArray.constructor(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = A2(f, i, typedArray[i]);
+    }
+    return newTypedArray;
   }
 
   function indexedMap2(f, typedArray1, typedArray2) {
-    function newF(element, index) {
-      return A3(f, index, element, typedArray2[index]);
+    var length = typedArray1.length;
+    var newTypedArray = new typedArray1.constructor(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = A3(f, i, typedArray1[i], typedArray2[i]);
     }
-    return typedArray1.map(newF);
+    return newTypedArray;
   }
 
   function reverse(typedArray) {
@@ -152,6 +174,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     extract: F3(extract),
     append: F2(append),
     replaceWithConstant: F4(replaceWithConstant),
+    map: F2(map),
+    map2: F3(map2),
     indexedMap: F2(indexedMap),
     indexedMap2: F3(indexedMap2),
     reverse: reverse,

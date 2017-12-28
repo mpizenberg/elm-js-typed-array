@@ -21,6 +21,8 @@ module JsTypedArray
         , indexedMap2
         , join
         , length
+        , map
+        , map2
         , replaceWithConstant
         , reverse
         , reverseSort
@@ -71,6 +73,8 @@ to avoid side effects.
 Complexity is thus greater than O(length).
 
 @docs replaceWithConstant, indexedMap, indexedMap2, reverse, sort, reverseSort
+
+@docs map, map2
 
 
 # Array Reductions
@@ -360,6 +364,20 @@ Complexity: O(length).
 replaceWithConstant : Int -> Int -> b -> JsTypedArray a b -> JsTypedArray a b
 replaceWithConstant =
     Native.JsTypedArray.replaceWithConstant
+
+
+{-| TODO
+-}
+map : (b -> b) -> JsTypedArray a b -> JsTypedArray a b
+map =
+    Native.JsTypedArray.map
+
+
+{-| TODO
+-}
+map2 : (b -> b) -> JsTypedArray a b -> JsTypedArray a b
+map2 =
+    Native.JsTypedArray.map2
 
 
 {-| Apply a function to every element of the array.
