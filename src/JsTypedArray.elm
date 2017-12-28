@@ -3,6 +3,7 @@ module JsTypedArray
         ( Float64
         , JsTypedArray
         , Uint8
+        , append
         , buffer
         , bufferOffset
         , extract
@@ -57,9 +58,9 @@ The following functions use predicates to analyze typed arrays.
 @docs indexedAll, indexedAny, findIndex, indexedFilter
 
 
-# Array Extraction
+# Array Extraction and Appending
 
-@docs extract
+@docs extract, append
 
 
 # Array Transformations
@@ -319,6 +320,25 @@ Complexity: O(1).
 extract : Int -> Int -> JsTypedArray a b -> JsTypedArray a b
 extract =
     Native.JsTypedArray.extract
+
+
+{-| Append two arrays of the same type into a new one.
+
+Complexity: O(n).
+
+    typedArray1 =
+        JsUint8Array.fromList [ 0, 1 ]
+
+    typedArray2 =
+        JsUint8Array.fromList [ 0, 14, 42 ]
+
+    JsTypedArray.append typedArray1 typedArray2
+    --> { 0 = 0, 1 = 1, 2 = 0, 3 = 14, 4 = 42 }
+
+-}
+append : JsTypedArray a b -> JsTypedArray a b -> JsTypedArray a b
+append =
+    Native.JsTypedArray.append
 
 
 

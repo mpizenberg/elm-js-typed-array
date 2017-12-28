@@ -54,6 +54,15 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return typedArray.subarray(start, end);
   }
 
+  function append(typedArray1, typedArray2) {
+    var newTypedArray = new typedArray1.constructor(
+      typedArray1.length + typedArray2.length
+    );
+    newTypedArray.set(typedArray1);
+    newTypedArray.set(typedArray2, typedArray1.length);
+    return newTypedArray;
+  }
+
   function replaceWithConstant(start, end, constant, typedArray) {
     var copiedTypedArray = typedArray.slice();
     return copiedTypedArray.fill(constant, start, end);
@@ -143,6 +152,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     findIndex: F2(findIndex),
     indexedFilter: F2(indexedFilter),
     extract: F3(extract),
+    append: F2(append),
     replaceWithConstant: F4(replaceWithConstant),
     indexedMap: F2(indexedMap),
     indexedMap2: F3(indexedMap2),
