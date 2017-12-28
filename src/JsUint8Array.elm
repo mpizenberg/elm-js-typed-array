@@ -3,6 +3,7 @@ module JsUint8Array
         ( fromArray
         , fromBuffer
         , fromList
+        , initialize
         , repeat
         , zeros
         )
@@ -14,7 +15,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-@docs zeros, repeat, fromBuffer, fromArray, fromList
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList
 
 -}
 
@@ -55,6 +56,19 @@ Complexity: O(length).
 repeat : Int -> Int -> JsTypedArray Uint8 Int
 repeat length =
     Native.JsUint8Array.repeat (max 0 length)
+
+
+{-| Initialize an array applying a function to each index.
+
+Complexity: O(length).
+
+    JsUint8Array.initialize 3 (\n -> n * n)
+    --> { 0 = 0, 1 = 1, 2 = 4 } : JsTypedArray Uint8 Int
+
+-}
+initialize : Int -> (Int -> Int) -> JsTypedArray Uint8 Int
+initialize length =
+    Native.JsUint8Array.initialize (max 0 length)
 
 
 {-| Initialize an array from a buffer at a given offset (in bytes), of a given length.

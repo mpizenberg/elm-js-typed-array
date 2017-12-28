@@ -8,6 +8,14 @@ var _mpizenberg$elm_js_typed_array$Native_JsUint8Array = (function() {
     return typedArray.fill(constant);
   }
 
+  function initialize(length, f) {
+    var typedArray = new Uint8Array(length);
+    for (var i = 0; i < length; i++) {
+      typedArray[i] = f(i);
+    }
+    return typedArray;
+  }
+
   function fromBuffer(byteOffset, length, buffer) {
     return new Uint8Array(buffer, byteOffset, length);
   }
@@ -26,6 +34,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsUint8Array = (function() {
   return {
     zeros: zeros,
     repeat: F2(repeat),
+    initialize: F2(initialize),
     fromBuffer: F3(fromBuffer),
     fromList: F2(fromList)
   };
