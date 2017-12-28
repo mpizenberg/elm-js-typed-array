@@ -46,18 +46,18 @@ indexedAll =
     describe "indexedAll"
         [ test "Elements of empty array verify any predicate" <|
             \_ ->
-                JsUint8Array.initialize 0
+                JsUint8Array.zeros 0
                     |> JsTypedArray.indexedAll (\_ _ -> False)
                     |> Expect.true "Elements of empty array verify any predicate"
         , fuzz lengthFuzzer "True predicate on all elements returns True" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedAll (\_ _ -> True)
                     |> Expect.true "True predicate on all elements returns True"
         , fuzz lengthFuzzer "Returns False if predicate returns False one time" <|
             \length ->
                 if length > 0 then
-                    JsUint8Array.initialize length
+                    JsUint8Array.zeros length
                         |> JsTypedArray.indexedAll (\id _ -> id /= length - 1)
                         |> Expect.false "Returns False if predicate returns False one time"
                 else
@@ -70,18 +70,18 @@ indexedAny =
     describe "indexedAny"
         [ test "Empty array always returns false" <|
             \_ ->
-                JsUint8Array.initialize 0
+                JsUint8Array.zeros 0
                     |> JsTypedArray.indexedAny (\_ _ -> True)
                     |> Expect.false "Empty array always returns false"
         , fuzz lengthFuzzer "False if predicates evaluates False on all elements" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedAny (\_ _ -> False)
                     |> Expect.false "False if predicates evaluates False on all elements"
         , fuzz lengthFuzzer "Returns True if predicate returns True one time" <|
             \length ->
                 if length > 0 then
-                    JsUint8Array.initialize length
+                    JsUint8Array.zeros length
                         |> JsTypedArray.indexedAny (\id _ -> id == length - 1)
                         |> Expect.true "Returns False if predicate returns False one time"
                 else
@@ -94,13 +94,13 @@ indexedMap =
     describe "indexedMap"
         [ fuzz lengthFuzzer "indexedMap preserve length" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedMap (\_ _ -> 42)
                     |> JsTypedArray.length
                     |> Expect.equal length
         , fuzz lengthFuzzer "indexedMap coherent" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedMap (\id _ -> id)
                     |> JsTypedArray.indexedAll (\id value -> id % 256 == value)
                     |> Expect.true "All values set to index"
@@ -114,10 +114,10 @@ indexedMap2 =
             \l1 l2 ->
                 let
                     typedArray1 =
-                        JsUint8Array.initialize l1
+                        JsUint8Array.zeros l1
 
                     typedArray2 =
-                        JsUint8Array.initialize l2
+                        JsUint8Array.zeros l2
 
                     resultArray =
                         JsTypedArray.indexedMap2 (\_ _ _ -> 42) typedArray1 typedArray2
@@ -155,12 +155,12 @@ getAt =
         [ fuzz2 lengthFuzzer Fuzz.int "Get value at random index" <|
             \length index ->
                 if 0 <= index && index < length then
-                    JsUint8Array.initialize length
+                    JsUint8Array.zeros length
                         |> JsTypedArray.indexedMap (\id _ -> id)
                         |> JsTypedArray.getAt index
                         |> Expect.equal (Just <| index % 256)
                 else
-                    JsUint8Array.initialize length
+                    JsUint8Array.zeros length
                         |> JsTypedArray.getAt index
                         |> Expect.equal Nothing
         ]
@@ -172,11 +172,11 @@ findIndex =
         [ fuzz2 lengthFuzzer Fuzz.int "Find at random index" <|
             \length index ->
                 if 0 <= index && index < length then
-                    JsUint8Array.initialize length
+                    JsUint8Array.zeros length
                         |> JsTypedArray.findIndex (\id _ -> id == index)
                         |> Expect.equal (Just index)
                 else
-                    JsUint8Array.initialize length
+                    JsUint8Array.zeros length
                         |> JsTypedArray.findIndex (\id _ -> id == index)
                         |> Expect.equal Nothing
         ]
@@ -187,13 +187,13 @@ indexedFilter =
     describe "indexedFilter"
         [ fuzz2 lengthFuzzer Fuzz.int "Filter out big indices" <|
             \length index ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedFilter (\id _ -> id < index)
                     |> JsTypedArray.length
                     |> Expect.equal (max 0 (min length index))
         , fuzz2 lengthFuzzer Fuzz.int "Filter out small indices" <|
             \length index ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedFilter (\id _ -> id >= index)
                     |> JsTypedArray.length
                     |> Expect.equal (length - max 0 (min length index))
@@ -207,7 +207,7 @@ extract =
             \a b c ->
                 case List.sort [ a, b, c ] of
                     l1 :: l2 :: l3 :: [] ->
-                        JsUint8Array.initialize l3
+                        JsUint8Array.zeros l3
                             |> JsTypedArray.indexedMap (\id _ -> id)
                             |> JsTypedArray.extract l1 l2
                             |> JsTypedArray.indexedAll (\id value -> value == (id + l1) % 256)
@@ -219,7 +219,7 @@ extract =
             \length start end ->
                 let
                     typedArray =
-                        JsUint8Array.initialize length
+                        JsUint8Array.zeros length
                             |> JsTypedArray.indexedMap (\id _ -> id)
 
                     correctStart =
@@ -237,7 +237,7 @@ replaceWithConstant : Test
 replaceWithConstant =
     fuzz4 lengthFuzzer Fuzz.int Fuzz.int Fuzz.int "replaceWithConstant" <|
         \length start end constant ->
-            JsUint8Array.initialize length
+            JsUint8Array.zeros length
                 |> JsTypedArray.replaceWithConstant start end constant
                 |> JsTypedArray.extract start end
                 |> JsTypedArray.indexedAll (\_ value -> value == constant % 256)
@@ -295,12 +295,12 @@ indexedFoldl =
     describe "indexedFoldl"
         [ fuzz lengthFuzzer "Length equals fold with (+1)" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedFoldl (\_ _ v -> v + 1) 0
                     |> Expect.equal length
         , fuzz lengthFuzzer "Sum of zeros equals zero" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedFoldl (\_ v sum -> sum + v) 0
                     |> Expect.equal 0
         , fuzz TestFuzz.jsUint8Array "Cons foldl equals reverse" <|
@@ -318,12 +318,12 @@ indexedFoldr =
     describe "indexedFoldr"
         [ fuzz lengthFuzzer "Length equals fold with (+1)" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedFoldr (\_ _ v -> v + 1) 0
                     |> Expect.equal length
         , fuzz lengthFuzzer "Sum of zeros equals zero" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.indexedFoldr (\_ v sum -> sum + v) 0
                     |> Expect.equal 0
         , fuzz TestFuzz.jsUint8Array "Cons foldr equals identity" <|

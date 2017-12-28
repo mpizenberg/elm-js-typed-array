@@ -1,7 +1,7 @@
 module TestJsUint8Array
     exposing
         ( fromBuffer
-        , initialize
+        , zeros
         )
 
 import Expect exposing (Expectation)
@@ -34,17 +34,17 @@ lengthFuzzer =
     Fuzz.intRange 0 maxLength
 
 
-initialize : Test
-initialize =
+zeros : Test
+zeros =
     describe "Initialization and length"
         [ fuzz negativeInt "Initialize with negative length returns empty array" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.length
                     |> Expect.equal 0
         , fuzz lengthFuzzer "Initialize with correct length" <|
             \length ->
-                JsUint8Array.initialize length
+                JsUint8Array.zeros length
                     |> JsTypedArray.length
                     |> Expect.equal length
         ]

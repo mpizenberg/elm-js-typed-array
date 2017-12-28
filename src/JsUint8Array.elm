@@ -3,7 +3,7 @@ module JsUint8Array
         ( fromArray
         , fromBuffer
         , fromList
-        , initialize
+        , zeros
         )
 
 {-| Provides functions to initialize JavaScript [`Uint8Array`][Uint8Array].
@@ -13,7 +13,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-@docs initialize, fromBuffer, fromArray, fromList
+@docs zeros, fromBuffer, fromArray, fromList
 
 -}
 
@@ -33,13 +33,13 @@ Internally uses `new Uint8Array( length )`.
 
 Complexity: O(length).
 
-    JsUint8Array.initialize 3
+    JsUint8Array.zeros 3
     --> { 0 = 0, 1 = 0, 2 = 0 } : JsTypedArray Uint8 Int
 
 -}
-initialize : Int -> JsTypedArray Uint8 Int
-initialize length =
-    Native.JsUint8Array.initialize (max 0 length)
+zeros : Int -> JsTypedArray Uint8 Int
+zeros length =
+    Native.JsUint8Array.zeros (max 0 length)
 
 
 {-| Initialize an array from a buffer at a given offset (in bytes), of a given length.
@@ -47,23 +47,23 @@ Internally uses `new Uint8Array( buffer, byteOffset, length )`.
 
 Complexity: O(1).
 
-    JsArrayBuffer.initialize 5
+    JsArrayBuffer.zeros 5
         |> JsUint8Array.fromBuffer 0 3
     --> Ok { 0 = 0, 1 = 0, 2 = 0 }
 
-    JsArrayBuffer.initialize 5
+    JsArrayBuffer.zeros 5
         |> JsUint8Array.fromBuffer -1 3
     --> Err "Negative offset: -1"
 
-    JsArrayBuffer.initialize 5
+    JsArrayBuffer.zeros 5
         |> JsUint8Array.fromBuffer 0 -2
     --> Err "Negative length: -2"
 
-    JsArrayBuffer.initialize 5
+    JsArrayBuffer.zeros 5
         |> JsUint8Array.fromBuffer 3 4
     --> Err "Overflows buffer size (5 bytes)"
 
-    JsArrayBuffer.initialize 5
+    JsArrayBuffer.zeros 5
         |> JsUint8Array.fromBuffer 3 2
     --> Ok { 0 = 0, 1 = 0 }
 

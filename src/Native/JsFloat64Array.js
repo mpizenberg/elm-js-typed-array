@@ -1,6 +1,7 @@
-var _mpizenberg$elm_js_typed_array$Native_JsFloat64Array = function() {
-
-  function initialize(length) { return new Float64Array(length); }
+var _mpizenberg$elm_js_typed_array$Native_JsFloat64Array = (function() {
+  function zeros(length) {
+    return new Float64Array(length);
+  }
 
   function fromBuffer(byteOffset, length, buffer) {
     return new Float64Array(buffer, byteOffset, length);
@@ -18,9 +19,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsFloat64Array = function() {
   }
 
   return {
-    initialize : initialize,
-    fromBuffer : F3(fromBuffer),
-    fromList : F2(fromList),
+    zeros: zeros,
+    fromBuffer: F3(fromBuffer),
+    fromList: F2(fromList)
   };
-}
-();
+})();

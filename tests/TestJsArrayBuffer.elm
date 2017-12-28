@@ -1,7 +1,7 @@
 module TestJsArrayBuffer
     exposing
-        ( initialize
-        , slice
+        ( slice
+        , zeros
         )
 
 import Expect exposing (Expectation)
@@ -27,17 +27,17 @@ lengthInt =
     Fuzz.intRange 0 maxArrayBufferLengthTested
 
 
-initialize : Test
-initialize =
+zeros : Test
+zeros =
     describe "Initialization and length"
         [ fuzz negativeInt "Initialize with negative length returns empty array" <|
             \length ->
-                JsArrayBuffer.initialize length
+                JsArrayBuffer.zeros length
                     |> JsArrayBuffer.length
                     |> Expect.equal 0
         , fuzz lengthInt "Initialize an array buffer with correct length" <|
             \length ->
-                JsArrayBuffer.initialize length
+                JsArrayBuffer.zeros length
                     |> JsArrayBuffer.length
                     |> Expect.equal length
         ]
@@ -63,7 +63,7 @@ slice =
             \length start end ->
                 let
                     arrayBuffer =
-                        JsArrayBuffer.initialize length
+                        JsArrayBuffer.zeros length
 
                     slicedArrayBuffer =
                         JsArrayBuffer.slice start end arrayBuffer
@@ -87,7 +87,7 @@ slice =
             \length start end ->
                 let
                     arrayBuffer =
-                        JsArrayBuffer.initialize length
+                        JsArrayBuffer.zeros length
 
                     slicedArrayBuffer =
                         JsArrayBuffer.slice start end arrayBuffer

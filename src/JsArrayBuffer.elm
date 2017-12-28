@@ -1,9 +1,9 @@
 module JsArrayBuffer
     exposing
         ( JsArrayBuffer
-        , initialize
         , length
         , slice
+        , zeros
         )
 
 {-| This module is wrapping javascript [ArrayBuffer].
@@ -14,7 +14,7 @@ through views (like Uint8Array, Float64Array, etc.).
 
 [ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
 
-@docs JsArrayBuffer, initialize, length, slice
+@docs JsArrayBuffer, zeros, length, slice
 
 -}
 
@@ -39,9 +39,9 @@ length =
 If `length` is negative, creates an empty array.
 
 -}
-initialize : Int -> JsArrayBuffer
-initialize int =
-    Native.JsArrayBuffer.initialize (max 0 int)
+zeros : Int -> JsArrayBuffer
+zeros int =
+    Native.JsArrayBuffer.zeros (max 0 int)
 
 
 {-| Get a sub section of an array: `(slice start end array)`.

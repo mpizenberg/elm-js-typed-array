@@ -24,7 +24,7 @@ length =
 
 jsArrayBuffer : Fuzzer JsArrayBuffer
 jsArrayBuffer =
-    Fuzz.map JsArrayBuffer.initialize length
+    Fuzz.map JsArrayBuffer.zeros length
 
 
 jsUint8Array : Fuzzer (JsTypedArray Uint8 Int)

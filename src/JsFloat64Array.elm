@@ -3,7 +3,7 @@ module JsFloat64Array
         ( fromArray
         , fromBuffer
         , fromList
-        , initialize
+        , zeros
         )
 
 {-| Provides functions to initialize JavaScript [`Float64Array`][Float64Array].
@@ -13,7 +13,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
-@docs initialize, fromBuffer, fromArray, fromList
+@docs zeros, fromBuffer, fromArray, fromList
 
 -}
 
@@ -33,13 +33,13 @@ Internally uses `new Float64Array( length )`.
 
 Complexity: O(length).
 
-    JsFloat64Array.initialize 3
+    JsFloat64Array.zeros 3
     --> { 0 = 0, 1 = 0, 2 = 0 } : JsTypedArray Float64 Float
 
 -}
-initialize : Int -> JsTypedArray Float64 Float
-initialize length =
-    Native.JsFloat64Array.initialize (max 0 length)
+zeros : Int -> JsTypedArray Float64 Float
+zeros length =
+    Native.JsFloat64Array.zeros (max 0 length)
 
 
 {-| Initialize an array from a buffer at a given offset (in bytes), of a given length.
@@ -47,27 +47,27 @@ Internally uses `new Float64Array( buffer, byteOffset, length )`.
 
 Complexity: O(1).
 
-    JsArrayBuffer.initialize (3 * 8)
+    JsArrayBuffer.zeros (3 * 8)
         |> JsFloat64Array.fromBuffer 0 3
     --> Ok { 0 = 0, 1 = 0, 2 = 0 }
 
-    JsArrayBuffer.initialize (3 * 8)
+    JsArrayBuffer.zeros (3 * 8)
         |> JsFloat64Array.fromBuffer -1 3
     --> Err "Negative offset: -1"
 
-    JsArrayBuffer.initialize (3 * 8)
+    JsArrayBuffer.zeros (3 * 8)
         |> JsFloat64Array.fromBuffer 0 -2
     --> Err "Negative length: -2"
 
-    JsArrayBuffer.initialize (3 * 8)
+    JsArrayBuffer.zeros (3 * 8)
         |> JsFloat64Array.fromBuffer 1 2
     --> Err "Provided offset (1) not a multiple of element size in bytes (8)"
 
-    JsArrayBuffer.initialize (3 * 8)
+    JsArrayBuffer.zeros (3 * 8)
         |> JsFloat64Array.fromBuffer (1*8) 3
     --> Err "Overflows buffer size (24 bytes)"
 
-    JsArrayBuffer.initialize (3 * 8)
+    JsArrayBuffer.zeros (3 * 8)
         |> JsFloat64Array.fromBuffer (1*8) 2
     --> Ok { 0 = 0, 1 = 0 }
 

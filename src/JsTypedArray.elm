@@ -39,7 +39,7 @@ The list of all JavaScript typed arrays representable is as below:
 # Typed Array Creation
 
 Functions to initialize typed arrays are in their dedicated modules.
-See for example the function `JsUint8Array.initialize : Int -> JsTypedArray Uint8 Int`
+See for example the function `JsUint8Array.zeros : Int -> JsTypedArray Uint8 Int`
 in the `JsUint8Array` module.
 
 
@@ -126,7 +126,7 @@ is different from its buffer length (in bytes).
 
 Complexity: O(1).
 
-    JsUint8Array.initialize 5
+    JsUint8Array.zeros 5
         |> JsTypedArray.length
     --> 5
 
@@ -193,7 +193,7 @@ Internally uses `TypedArray.prototype.byteOffset`.
 
 Complexity: O(1).
 
-    JsArrayBuffer.initialize 5
+    JsArrayBuffer.zeros 5
         |> JsUint8Array.fromBuffer 3 2
         |> Result.map JsTypedArray.bufferOffset
     --> Ok 3
@@ -347,7 +347,7 @@ Internally uses `TypedArray.prototype.map`.
 
 Complexity: O(length).
 
-    JsUint8Array.initialize 3
+    JsUint8Array.zeros 3
         |> JsTypedArray.indexedMap (\id _ -> id)
     --> { 0 = 0, 1 = 1, 2 = 2 }
 
