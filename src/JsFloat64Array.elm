@@ -3,6 +3,8 @@ module JsFloat64Array
         ( fromArray
         , fromBuffer
         , fromList
+        , initialize
+        , repeat
         , zeros
         )
 
@@ -13,7 +15,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
-@docs zeros, fromBuffer, fromArray, fromList
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList
 
 -}
 
@@ -40,6 +42,32 @@ Complexity: O(length).
 zeros : Int -> JsTypedArray Float64 Float
 zeros length =
     Native.JsFloat64Array.zeros (max 0 length)
+
+
+{-| Initialize an array of a given length with the same constant.
+
+Complexity: O(length).
+
+    JsFloat64Array.repeat 3 42
+    --> { 0 = 42, 1 = 42, 2 = 42 } : JsTypedArray Float64 Float
+
+-}
+repeat : Int -> Float -> JsTypedArray Float64 Float
+repeat length =
+    Native.JsFloat64Array.repeat (max 0 length)
+
+
+{-| Initialize an array applying a function to each index.
+
+Complexity: O(length).
+
+    JsFloat64Array.initialize 3 (\n -> n * n)
+    --> { 0 = 0, 1 = 1, 2 = 4 } : JsTypedArray Float64 Float
+
+-}
+initialize : Int -> (Int -> Float) -> JsTypedArray Float64 Float
+initialize length =
+    Native.JsFloat64Array.initialize (max 0 length)
 
 
 {-| Initialize an array from a buffer at a given offset (in bytes), of a given length.
