@@ -126,18 +126,38 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return typedArray.join(separator);
   }
 
-  function indexedFoldl(f, initialValue, typedArray) {
-    function flippedF(previous, current, index) {
-      return A3(f, index, current, previous);
+  function foldl(f, initialValue, typedArray) {
+    var length = typedArray.length;
+    var acc = initialValue;
+    for (var i = 0; i < length; i++) {
+      acc = A2(f, typedArray[i], acc);
     }
-    return typedArray.reduce(flippedF, initialValue);
+    return acc;
+  }
+
+  function indexedFoldl(f, initialValue, typedArray) {
+    var length = typedArray.length;
+    var acc = initialValue;
+    for (var i = 0; i < length; i++) {
+      acc = A3(f, i, typedArray[i], acc);
+    }
+    return acc;
+  }
+
+  function foldr(f, initialValue, typedArray) {
+    var acc = initialValue;
+    for (var i = typedArray.length - 1; i >= 0; i--) {
+      acc = A2(f, typedArray[i], acc);
+    }
+    return acc;
   }
 
   function indexedFoldr(f, initialValue, typedArray) {
-    function flippedF(previous, current, index) {
-      return A3(f, index, current, previous);
+    var acc = initialValue;
+    for (var i = typedArray.length - 1; i >= 0; i--) {
+      acc = A3(f, i, typedArray[i], acc);
     }
-    return typedArray.reduceRight(flippedF, initialValue);
+    return acc;
   }
 
   function indexedFoldl2(f, initialValue, typedArray1, typedArray2) {
@@ -182,6 +202,8 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     sort: sort,
     reverseSort: reverseSort,
     join: F2(join),
+    foldl: F3(foldl),
+    foldr: F3(foldr),
     indexedFoldl: F3(indexedFoldl),
     indexedFoldr: F3(indexedFoldr),
     indexedFoldl2: F4(indexedFoldl2),

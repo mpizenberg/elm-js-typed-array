@@ -8,7 +8,9 @@ module JsTypedArray
         , bufferOffset
         , extract
         , findIndex
+        , foldl
         , foldlr
+        , foldr
         , getAt
         , indexedAll
         , indexedAny
@@ -82,6 +84,8 @@ Complexity is thus greater than O(length).
 Reduce an array to a single value.
 
 @docs join, indexedFoldl, indexedFoldr, indexedFoldl2, indexedFoldr2, foldlr
+
+@docs foldl, foldr
 
 -}
 
@@ -485,6 +489,20 @@ Complexity: O(length).
 join : Char -> JsTypedArray a b -> String
 join =
     Native.JsTypedArray.join
+
+
+{-| TODO
+-}
+foldl : (b -> c -> c) -> c -> JsTypedArray a b -> c
+foldl =
+    Native.JsTypedArray.foldl
+
+
+{-| TODO
+-}
+foldr : (b -> c -> c) -> c -> JsTypedArray a b -> c
+foldr =
+    Native.JsTypedArray.foldr
 
 
 {-| Reduce the array from the left.
