@@ -170,6 +170,9 @@ getAt index array =
 {-| Same as `getAt` but unsafe.
 Return JS undefined if index is outside of bounds.
 Only useful if performance is required.
+
+Complexity: O(1).
+
 -}
 unsafeGetAt : Int -> JsTypedArray a b -> b
 unsafeGetAt index array =
