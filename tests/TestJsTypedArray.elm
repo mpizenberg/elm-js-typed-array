@@ -1,11 +1,11 @@
 module TestJsTypedArray
     exposing
         ( extract
-        , findIndex
         , getAt
         , indexedAll
         , indexedAny
         , indexedFilter
+        , indexedFindIndex
         , indexedFoldl
         , indexedFoldl2
         , indexedFoldr
@@ -166,18 +166,18 @@ getAt =
         ]
 
 
-findIndex : Test
-findIndex =
-    describe "findIndex"
+indexedFindIndex : Test
+indexedFindIndex =
+    describe "indexedFindIndex"
         [ fuzz2 lengthFuzzer Fuzz.int "Find at random index" <|
             \length index ->
                 if 0 <= index && index < length then
                     JsUint8Array.zeros length
-                        |> JsTypedArray.findIndex (\id _ -> id == index)
+                        |> JsTypedArray.indexedFindIndex (\id _ -> id == index)
                         |> Expect.equal (Just index)
                 else
                     JsUint8Array.zeros length
-                        |> JsTypedArray.findIndex (\id _ -> id == index)
+                        |> JsTypedArray.indexedFindIndex (\id _ -> id == index)
                         |> Expect.equal Nothing
         ]
 

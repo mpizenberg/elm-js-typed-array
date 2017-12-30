@@ -17,37 +17,104 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return typedArray.byteOffset;
   }
 
-  function indexedAll(f, typedArray) {
-    function flippedF(element, index) {
-      return A2(f, index, element);
+  function all(f, typedArray) {
+    var length = typedArray.length;
+    var allTrue = true;
+    var index = 0;
+    while (allTrue && index < length) {
+      allTrue = f(typedArray[index]);
+      index++;
     }
-    return typedArray.every(flippedF);
+    return allTrue;
+  }
+
+  function indexedAll(f, typedArray) {
+    var length = typedArray.length;
+    var allTrue = true;
+    var index = 0;
+    while (allTrue && index < length) {
+      allTrue = A2(f, index, typedArray[index]);
+      index++;
+    }
+    return allTrue;
+  }
+
+  function any(f, typedArray) {
+    var length = typedArray.length;
+    var anyTrue = false;
+    var index = 0;
+    while (!anyTrue && index < length) {
+      anyTrue = f(typedArray[index]);
+      index++;
+    }
+    return anyTrue;
   }
 
   function indexedAny(f, typedArray) {
-    function flippedF(element, index) {
-      return A2(f, index, element);
+    var length = typedArray.length;
+    var anyTrue = false;
+    var index = 0;
+    while (!anyTrue && index < length) {
+      anyTrue = A2(f, index, typedArray[index]);
+      index++;
     }
-    return typedArray.some(flippedF);
+    return anyTrue;
   }
 
   function findIndex(f, typedArray) {
-    function flippedF(element, index) {
-      return A2(f, index, element);
+    var length = typedArray.length;
+    var found = false;
+    var index = 0;
+    while (!found && index < length) {
+      found = f(typedArray[index]);
+      index++;
     }
-    var found = typedArray.findIndex(flippedF);
-    if (found >= 0) {
-      return _elm_lang$core$Maybe$Just(found);
+    if (found) {
+      return _elm_lang$core$Maybe$Just(index - 1);
     } else {
       return _elm_lang$core$Maybe$Nothing;
     }
   }
 
-  function indexedFilter(f, typedArray) {
-    function flippedF(element, index) {
-      return A2(f, index, element);
+  function indexedFindIndex(f, typedArray) {
+    var length = typedArray.length;
+    var found = false;
+    var index = 0;
+    while (!found && index < length) {
+      found = A2(f, index, typedArray[index]);
+      index++;
     }
-    return typedArray.filter(flippedF);
+    if (found) {
+      return _elm_lang$core$Maybe$Just(index - 1);
+    } else {
+      return _elm_lang$core$Maybe$Nothing;
+    }
+  }
+
+  function filter(f, typedArray) {
+    var length = typedArray.length;
+    var temporaryArray = new Array(0);
+    var currentValue = null;
+    for (var i = 0; i < length; i++) {
+      currentValue = typedArray[i];
+      if (f(currentValue)) {
+        temporaryArray.push(currentValue);
+      }
+    }
+    return new typedArray.constructor(temporaryArray);
+  }
+
+  function indexedFilter(f, typedArray) {
+    var length = typedArray.length;
+    var temporaryArray = new Array(0);
+    var currentValue = null;
+    for (var i = 0; i < length; i++) {
+      currentValue = typedArray[i];
+      if (A2(f, i, currentValue)) {
+        temporaryArray.push(currentValue);
+      }
+    }
+    return new typedArray.constructor(temporaryArray);
   }
 
   function extract(start, end, typedArray) {
@@ -187,9 +254,13 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     getAt: F2(getAt),
     buffer: buffer,
     bufferOffset: bufferOffset,
+    all: F2(all),
+    any: F2(any),
+    findIndex: F2(findIndex),
+    filter: F2(filter),
     indexedAll: F2(indexedAll),
     indexedAny: F2(indexedAny),
-    findIndex: F2(findIndex),
+    indexedFindIndex: F2(indexedFindIndex),
     indexedFilter: F2(indexedFilter),
     extract: F3(extract),
     append: F2(append),

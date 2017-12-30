@@ -3,10 +3,13 @@ module JsTypedArray
         ( Float64
         , JsTypedArray
         , Uint8
+        , all
+        , any
         , append
         , buffer
         , bufferOffset
         , extract
+        , filter
         , findIndex
         , foldl
         , foldlr
@@ -15,6 +18,7 @@ module JsTypedArray
         , indexedAll
         , indexedAny
         , indexedFilter
+        , indexedFindIndex
         , indexedFoldl
         , indexedFoldl2
         , indexedFoldr
@@ -55,11 +59,14 @@ in the `JsUint8Array` module.
 
 # Predicates
 
-Predicates here are functions taking an index, a value, and returning a boolean.
-(`Int -> b -> Bool`).
+Predicates here are functions returning a boolean.
+They come in two flavors. The `indexed...` version is additionally using
+the index as the first argument of the function to evaluate.
 The following functions use predicates to analyze typed arrays.
 
-@docs indexedAll, indexedAny, findIndex, indexedFilter
+@docs all, any, findIndex, filter
+
+@docs indexedAll, indexedAny, indexedFindIndex, indexedFilter
 
 
 # Array Extraction and Appending
@@ -221,17 +228,26 @@ bufferOffset =
 
 
 {-| Return `True` if all elements satisfy the predicate.
-Internally uses `TypedArray.prototype.every`.
 
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedAll (\_ v -> v < 50)
+        |> JsTypedArray.all (\v -> v < 50)
     --> True
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedAll (\_ v -> v < 20)
+        |> JsTypedArray.all (\v -> v < 20)
     --> False
+
+-}
+all : (b -> Bool) -> JsTypedArray a b -> Bool
+all =
+    Native.JsTypedArray.all
+
+
+{-| Indexed version of `all`.
+
+Complexity: O(length).
 
 -}
 indexedAll : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
@@ -240,17 +256,26 @@ indexedAll =
 
 
 {-| Return `True` if at least one element satisfies the predicate.
-Internally uses `TypedArray.prototype.some`.
 
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedAny (\_ v -> v > 50)
+        |> JsTypedArray.any (\v -> v > 50)
     --> False
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedAny (\_ v -> v > 20)
+        |> JsTypedArray.any (\v -> v > 20)
     --> True
+
+-}
+any : (b -> Bool) -> JsTypedArray a b -> Bool
+any =
+    Native.JsTypedArray.any
+
+
+{-| Indexed version of `any`.
+
+Complexity: O(length).
 
 -}
 indexedAny : (Int -> b -> Bool) -> JsTypedArray a b -> Bool
@@ -260,36 +285,54 @@ indexedAny =
 
 {-| Return the index of the first element satisfying the predicate.
 If no element satisfies it, returns `Nothing`.
-Internally uses `TypedArray.prototype.findIndex`.
 
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.findIndex (\_ v -> v > 20)
+        |> JsTypedArray.findIndex (\v -> v > 20)
     --> Just 2
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.findIndex (\_ v -> v > 50)
+        |> JsTypedArray.findIndex (\v -> v > 50)
     --> Nothing
 
 -}
-findIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Maybe Int
+findIndex : (b -> Bool) -> JsTypedArray a b -> Maybe Int
 findIndex =
     Native.JsTypedArray.findIndex
 
 
+{-| Indexed version of findIndex.
+
+Complexity: O(length).
+
+-}
+indexedFindIndex : (Int -> b -> Bool) -> JsTypedArray a b -> Maybe Int
+indexedFindIndex =
+    Native.JsTypedArray.indexedFindIndex
+
+
 {-| Filter an array, keeping only elements satisfying the predicate.
-Internally uses `TypedArray.prototype.filter`.
 
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedFilter (\_ v -> v > 20)
+        |> JsTypedArray.filter (\v -> v > 20)
     --> { 0 = 42 }
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedFilter (\_ v -> v < 20)
+        |> JsTypedArray.filter (\v -> v < 20)
     --> { 0 = 0, 1 = 14 }
+
+-}
+filter : (b -> Bool) -> JsTypedArray a b -> JsTypedArray a b
+filter =
+    Native.JsTypedArray.filter
+
+
+{-| Indexed version of filter.
+
+Complexity: O(length).
 
 -}
 indexedFilter : (Int -> b -> Bool) -> JsTypedArray a b -> JsTypedArray a b
@@ -388,7 +431,6 @@ map2 =
 
 
 {-| Apply a function to every element of the array.
-Internally uses `TypedArray.prototype.map`.
 
 Complexity: O(length).
 
@@ -509,7 +551,6 @@ foldr =
 
 
 {-| Reduce the array from the left.
-Internally uses `TypedArray.prototype.reduce`.
 
 Complexity: O(length).
 
@@ -528,7 +569,6 @@ indexedFoldl =
 
 
 {-| Reduce the array from the right.
-Internally uses `TypedArray.prototype.reduceRight`.
 
 Complexity: O(length).
 
