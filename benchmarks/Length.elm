@@ -25,10 +25,10 @@ main =
 length : List a -> Int
 length list =
     let
-        helper n l =
-            case l of
+        helper n xs =
+            case xs of
                 [] ->
-                    0
+                    n
 
                 _ :: tail ->
                     helper (n + 1) tail
