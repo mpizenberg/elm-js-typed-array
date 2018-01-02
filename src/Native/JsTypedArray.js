@@ -117,6 +117,22 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return new typedArray.constructor(temporaryArray);
   }
 
+  function equal(typedArray1, typedArray2) {
+    var length1 = typedArray1.length;
+    var length2 = typedArray2.length;
+    var result = false;
+    if (length1 === length2) {
+      var allEqual = true;
+      var index = 0;
+      while (allEqual && index < length1) {
+        allEqual = typedArray1[index] === typedArray2[index];
+        index++;
+      }
+      result = allEqual;
+    }
+    return result;
+  }
+
   function extract(start, end, typedArray) {
     return typedArray.subarray(start, end);
   }
@@ -283,6 +299,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     indexedAny: F2(indexedAny),
     indexedFindIndex: F2(indexedFindIndex),
     indexedFilter: F2(indexedFilter),
+    equal: F2(equal),
     extract: F3(extract),
     append: F2(append),
     replaceWithConstant: F4(replaceWithConstant),

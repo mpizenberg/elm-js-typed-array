@@ -8,6 +8,7 @@ module JsTypedArray
         , append
         , buffer
         , bufferOffset
+        , equal
         , extract
         , filter
         , findIndex
@@ -69,6 +70,11 @@ The following functions use predicates to analyze typed arrays.
 @docs all, any, findIndex, filter
 
 @docs indexedAll, indexedAny, indexedFindIndex, indexedFilter
+
+
+# Comparison
+
+@docs equal
 
 
 # Array Extraction and Appending
@@ -345,6 +351,55 @@ indexedFilter =
 
 
 
+-- COMPARISON ########################################################
+
+
+{-| Check if two typed arrays are equal.
+
+    typedArray1 =
+        JsUint8Array.fromList [0, 14, 42]
+
+    typedArray2 =
+        JsUint8Array.fromList [0, 14, 42, 1000]
+
+    typedArray3 =
+        JsTypedArray.extract 0 3 typedArray2
+
+    JsTypedArray.equal typedArray1 typedArray2
+    --> False
+
+    JsTypedArray.equal typedArray1 typedArray3
+    --> True
+
+-}
+equal : JsTypedArray a b -> JsTypedArray a b -> Bool
+equal typedArray1 typedArray2 =
+    -- benchmark if Native is a lot faster or not.
+    -- equal =
+    --     Native.JsTypedArray.equal
+    let
+        length1 =
+            length typedArray1
+
+        length2 =
+            length typedArray2
+    in
+    if length1 /= length2 then
+        False
+    else
+        let
+            helper i =
+                if i >= length1 then
+                    True
+                else if unsafeGetAt i typedArray1 == unsafeGetAt i typedArray2 then
+                    helper (i + 1)
+                else
+                    False
+        in
+        helper 0
+
+
+
 -- ARRAY EXTRACTIONS #################################################
 
 
@@ -446,19 +501,19 @@ The bigger array is troncated at the size of the smaller one.
 
 Complexity: O(length).
 
-    array1 =
+    typedArray1 =
         JsUint8Array.fromList [ 0, 1, 2 ]
 
-    array2 =
+    typedArray2 =
         JsUint8Array.fromList [ 0, 14, 42 ]
 
-    array3 =
+    typedArray3 =
         JsUint8Array.fromList [ 0, 1, 2, 3, 4, 5, 6, 7 ]
 
-    JsTypedArray.map2 (+) array1 array2
+    JsTypedArray.map2 (+) typedArray1 typedArray2
     --> { 0 = 0, 1 = 15, 2 = 44 }
 
-    JsTypedArray.map2 (+) array1 array3
+    JsTypedArray.map2 (+) typedArray1 typedArray3
     --> { 0 = 0, 1 = 2, 2 = 4 }
 
 -}
@@ -495,7 +550,6 @@ indexedMap2 f typedArray1 typedArray2 =
 
 
 {-| Reverse the array.
-Internally uses `TypedArray.prototype.reverse`.
 
 Complexity: O(length).
 
@@ -605,13 +659,13 @@ Complexity: O(length).
     innerProduct =
         JsTypedArray.foldl2 (\x y product -> x * y + product) 0
 
-    array1 =
+    typedArray1 =
         JsUint8Array.fromList [0, 1, 2]
 
-    array2 =
+    typedArray2 =
         JsUint8Array.fromList [0, 14, 42, 10000]
 
-    innerProduct array1 array2
+    innerProduct typedArray1 typedArray2
     --> 98
 
 -}
@@ -656,13 +710,13 @@ Complexity: O(length).
     toZipList =
         JsTypedArray.foldr2 (\x y list -> (x,y) :: list) []
 
-    array1 =
+    typedArray1 =
         JsUint8Array.fromList [0, 1, 2]
 
-    array2 =
+    typedArray2 =
         JsUint8Array.fromList [0, 14, 42, 10000]
 
-    toZipList array1 array2
+    toZipList typedArray1 typedArray2
     --> [ (0,14), (1,42), (2,1000) ]
 
 -}
