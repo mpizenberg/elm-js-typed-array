@@ -12,8 +12,10 @@ module JsTypedArray
         , filter
         , findIndex
         , foldl
+        , foldl2
         , foldlr
         , foldr
+        , foldr2
         , getAt
         , indexedAll
         , indexedAny
@@ -81,18 +83,20 @@ All such transformations imply a full copy of the array
 to avoid side effects.
 Complexity is thus greater than O(length).
 
-@docs replaceWithConstant, indexedMap, indexedMap2, reverse, sort, reverseSort
+@docs replaceWithConstant, map, map2, reverse, sort, reverseSort
 
-@docs map, map2
+@docs indexedMap, indexedMap2
 
 
 # Array Reductions
 
 Reduce an array to a single value.
 
-@docs join, indexedFoldl, indexedFoldr, indexedFoldl2, indexedFoldr2, foldlr
+@docs join, foldl, foldr, foldl2, foldr2, foldlr
 
-@docs foldl, foldr
+Indexed versions of reducers.
+
+@docs indexedFoldl, indexedFoldr, indexedFoldl2, indexedFoldr2
 
 -}
 
@@ -232,11 +236,11 @@ bufferOffset =
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.all (\v -> v < 50)
+        |> JsTypedArray.all (\x -> x < 50)
     --> True
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.all (\v -> v < 20)
+        |> JsTypedArray.all (\x -> x < 20)
     --> False
 
 -}
@@ -260,11 +264,11 @@ indexedAll =
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.any (\v -> v > 50)
+        |> JsTypedArray.any (\x -> x > 50)
     --> False
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.any (\v -> v > 20)
+        |> JsTypedArray.any (\x -> x > 20)
     --> True
 
 -}
@@ -289,11 +293,11 @@ If no element satisfies it, returns `Nothing`.
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.findIndex (\v -> v > 20)
+        |> JsTypedArray.findIndex (\x -> x > 20)
     --> Just 2
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.findIndex (\v -> v > 50)
+        |> JsTypedArray.findIndex (\x -> x > 50)
     --> Nothing
 
 -}
@@ -302,7 +306,7 @@ findIndex =
     Native.JsTypedArray.findIndex
 
 
-{-| Indexed version of findIndex.
+{-| Indexed version of `findIndex`.
 
 Complexity: O(length).
 
@@ -317,11 +321,11 @@ indexedFindIndex =
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.filter (\v -> v > 20)
+        |> JsTypedArray.filter (\x -> x > 20)
     --> { 0 = 42 }
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.filter (\v -> v < 20)
+        |> JsTypedArray.filter (\x -> x < 20)
     --> { 0 = 0, 1 = 14 }
 
 -}
@@ -330,7 +334,7 @@ filter =
     Native.JsTypedArray.filter
 
 
-{-| Indexed version of filter.
+{-| Indexed version of `filter`.
 
 Complexity: O(length).
 
@@ -416,32 +420,21 @@ replaceWithConstant =
     Native.JsTypedArray.replaceWithConstant
 
 
-{-| TODO
+{-| Apply a function to every element of the array.
+
+Complexity: O(length).
+
+    JsUint8Array.fromList [0, 14, 42]
+        |> JsTypedArray.map (\x -> x + 1)
+    --> { 0 = 1, 1 = 15, 2 = 43 }
+
 -}
 map : (b -> b) -> JsTypedArray a b -> JsTypedArray a b
 map =
     Native.JsTypedArray.map
 
 
-{-| TODO
--}
-map2 : (b -> b) -> JsTypedArray a b -> JsTypedArray a b
-map2 =
-    Native.JsTypedArray.map2
-
-
-{-| Apply a function to every element of the array.
-
-Complexity: O(length).
-
-    JsUint8Array.zeros 3
-        |> JsTypedArray.indexedMap (\id _ -> id)
-    --> { 0 = 0, 1 = 1, 2 = 2 }
-
-    JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.indexedMap (\_ v -> v + 1)
-    --> { 0 = 1, 1 = 15, 2 = 43 }
-
+{-| Indexed version of `map`.
 -}
 indexedMap : (Int -> b -> b) -> JsTypedArray a b -> JsTypedArray a b
 indexedMap =
@@ -462,12 +455,29 @@ Complexity: O(length).
     array3 =
         JsUint8Array.fromList [ 0, 1, 2, 3, 4, 5, 6, 7 ]
 
-    JsTypedArray.indexedMap2 (\_ x y -> x + y) array1 array2
+    JsTypedArray.map2 (+) array1 array2
     --> { 0 = 0, 1 = 15, 2 = 44 }
 
-    JsTypedArray.indexedMap2 (\_ x y -> x + y) array1 array3
+    JsTypedArray.map2 (+) array1 array3
     --> { 0 = 0, 1 = 2, 2 = 4 }
 
+-}
+map2 : (b -> b -> b) -> JsTypedArray a b -> JsTypedArray a b -> JsTypedArray a b
+map2 f typedArray1 typedArray2 =
+    let
+        newLength =
+            min (length typedArray1) (length typedArray2)
+
+        newArray1 =
+            extract 0 newLength typedArray1
+
+        newArray2 =
+            extract 0 newLength typedArray2
+    in
+    Native.JsTypedArray.map2 f newArray1 newArray2
+
+
+{-| Indexed version of `map2`.
 -}
 indexedMap2 : (Int -> b -> b -> b) -> JsTypedArray a b -> JsTypedArray a b -> JsTypedArray a b
 indexedMap2 f typedArray1 typedArray2 =
@@ -536,32 +546,25 @@ join =
     Native.JsTypedArray.join
 
 
-{-| TODO
--}
-foldl : (b -> c -> c) -> c -> JsTypedArray a b -> c
-foldl =
-    Native.JsTypedArray.foldl
-
-
-{-| TODO
--}
-foldr : (b -> c -> c) -> c -> JsTypedArray a b -> c
-foldr =
-    Native.JsTypedArray.foldr
-
-
 {-| Reduce the array from the left.
 
 Complexity: O(length).
 
     sumArray : JsTypedArray a number -> number
     sumArray =
-        JsTypedArray.indexedFoldl (always (+)) 0
+        JsTypedArray.foldl (+) 0
 
     JsUint8Array.fromList [0, 14, 42]
         |> sumArray
     --> 56
 
+-}
+foldl : (b -> c -> c) -> c -> JsTypedArray a b -> c
+foldl =
+    Native.JsTypedArray.foldl
+
+
+{-| Indexed version of foldl.
 -}
 indexedFoldl : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
 indexedFoldl =
@@ -574,12 +577,19 @@ Complexity: O(length).
 
     arrayToList : JsTypedArray a b -> List b
     arrayToList =
-        JsTypedArray.indexedFoldr (always (::)) []
+        JsTypedArray.foldr (::) []
 
     JsUint8Array.fromList [0, 14, 42]
         |> arrayToList
     --> [0, 14, 42]
 
+-}
+foldr : (b -> c -> c) -> c -> JsTypedArray a b -> c
+foldr =
+    Native.JsTypedArray.foldr
+
+
+{-| Indexed version of foldr.
 -}
 indexedFoldr : (Int -> b -> c -> c) -> c -> JsTypedArray a b -> c
 indexedFoldr =
@@ -593,7 +603,7 @@ Complexity: O(length).
 
     innerProduct : JsTypedArray a number -> JsTypedArray a number -> number
     innerProduct =
-        JsTypedArray.indexedFoldl2 (\_ x y product -> x * y + product) 0
+        JsTypedArray.foldl2 (\x y product -> x * y + product) 0
 
     array1 =
         JsUint8Array.fromList [0, 1, 2]
@@ -604,6 +614,23 @@ Complexity: O(length).
     innerProduct array1 array2
     --> 98
 
+-}
+foldl2 : (b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
+foldl2 f initialValue typedArray1 typedArray2 =
+    let
+        newLength =
+            min (length typedArray1) (length typedArray2)
+
+        newArray1 =
+            extract 0 newLength typedArray1
+
+        newArray2 =
+            extract 0 newLength typedArray2
+    in
+    Native.JsTypedArray.foldl2 f initialValue newArray1 newArray2
+
+
+{-| Indexed version of foldl2.
 -}
 indexedFoldl2 : (Int -> b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
 indexedFoldl2 f initialValue typedArray1 typedArray2 =
@@ -627,7 +654,7 @@ Complexity: O(length).
 
     toZipList : JsTypedArray a b -> JsTypedArray a b -> List (b,b)
     toZipList =
-        JsTypedArray.indexedFoldr2 (\_ x y list -> (x,y) :: list) []
+        JsTypedArray.foldr2 (\x y list -> (x,y) :: list) []
 
     array1 =
         JsUint8Array.fromList [0, 1, 2]
@@ -636,8 +663,31 @@ Complexity: O(length).
         JsUint8Array.fromList [0, 14, 42, 10000]
 
     toZipList array1 array2
-    --> [(0,14),(1,42),(2,1000)]
+    --> [ (0,14), (1,42), (2,1000) ]
 
+-}
+foldr2 : (b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
+foldr2 f initialValue typedArray1 typedArray2 =
+    let
+        length1 =
+            length typedArray1
+
+        length2 =
+            length typedArray2
+
+        newLength =
+            min length1 length2
+
+        newArray1 =
+            extract (length1 - newLength) length1 typedArray1
+
+        newArray2 =
+            extract (length2 - newLength) length2 typedArray2
+    in
+    Native.JsTypedArray.foldr2 f initialValue newArray1 newArray2
+
+
+{-| Indexed version of foldr2.
 -}
 indexedFoldr2 : (Int -> b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
 indexedFoldr2 f initialValue typedArray1 typedArray2 =
@@ -665,7 +715,7 @@ The longer array is troncated at the size of the smaller one.
 
 Complexity: O(length).
 
-TODO: example + tests
+TODO: example
 
 -}
 foldlr : (b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c

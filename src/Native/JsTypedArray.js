@@ -144,20 +144,20 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return newTypedArray;
   }
 
-  function map2(f, typedArray1, typedArray2) {
-    var length = typedArray1.length;
-    var newTypedArray = new typedArray1.constructor(length);
-    for (var i = 0; i < length; i++) {
-      newTypedArray[i] = A2(f, typedArray1[i], typedArray2[i]);
-    }
-    return newTypedArray;
-  }
-
   function indexedMap(f, typedArray) {
     var length = typedArray.length;
     var newTypedArray = new typedArray.constructor(length);
     for (var i = 0; i < length; i++) {
       newTypedArray[i] = A2(f, i, typedArray[i]);
+    }
+    return newTypedArray;
+  }
+
+  function map2(f, typedArray1, typedArray2) {
+    var length = typedArray1.length;
+    var newTypedArray = new typedArray1.constructor(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = A2(f, typedArray1[i], typedArray2[i]);
     }
     return newTypedArray;
   }
@@ -227,26 +227,47 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     return acc;
   }
 
-  function indexedFoldl2(f, initialValue, typedArray1, typedArray2) {
-    function newF(accumulated, current, index) {
-      return A4(f, index, current, typedArray2[index], accumulated);
+  function foldl2(f, initialValue, typedArray1, typedArray2) {
+    var length = typedArray1.length;
+    var acc = initialValue;
+    for (var i = 0; i < length; i++) {
+      acc = A3(f, typedArray1[i], typedArray2[i], acc);
     }
-    return typedArray1.reduce(newF, initialValue);
+    return acc;
+  }
+
+  function indexedFoldl2(f, initialValue, typedArray1, typedArray2) {
+    var length = typedArray1.length;
+    var acc = initialValue;
+    for (var i = 0; i < length; i++) {
+      acc = A4(f, i, typedArray1[i], typedArray2[i], acc);
+    }
+    return acc;
+  }
+
+  function foldr2(f, initialValue, typedArray1, typedArray2) {
+    var acc = initialValue;
+    for (var i = typedArray1.length - 1; i >= 0; i--) {
+      acc = A3(f, typedArray1[i], typedArray2[i], acc);
+    }
+    return acc;
   }
 
   function indexedFoldr2(f, initialValue, typedArray1, typedArray2) {
-    function newF(accumulated, current, index) {
-      return A4(f, index, current, typedArray2[index], accumulated);
+    var acc = initialValue;
+    for (var i = typedArray1.length - 1; i >= 0; i--) {
+      acc = A4(f, i, typedArray1[i], typedArray2[i], acc);
     }
-    return typedArray1.reduceRight(newF, initialValue);
+    return acc;
   }
 
   function foldlr(f, initialValue, typedArray1, typedArray2) {
-    const lastIndex = typedArray2.length - 1;
-    function newF(accumulated, current, index) {
-      return A3(f, current, typedArray2[lastIndex - index], accumulated);
+    var length = typedArray1.length;
+    var acc = initialValue;
+    for (var i = 0; i < length; i++) {
+      acc = A3(f, typedArray1[i], typedArray2[length - 1 - i], acc);
     }
-    return typedArray1.reduce(newF, initialValue);
+    return acc;
   }
 
   return {
@@ -275,10 +296,12 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     join: F2(join),
     foldl: F3(foldl),
     foldr: F3(foldr),
+    foldl2: F4(foldl2),
+    foldr2: F4(foldr2),
+    foldlr: F4(foldlr),
     indexedFoldl: F3(indexedFoldl),
     indexedFoldr: F3(indexedFoldr),
     indexedFoldl2: F4(indexedFoldl2),
-    indexedFoldr2: F4(indexedFoldr2),
-    foldlr: F4(foldlr)
+    indexedFoldr2: F4(indexedFoldr2)
   };
 })();
