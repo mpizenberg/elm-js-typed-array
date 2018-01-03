@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "JS typed array wrapper for elm",
+    "summary": "JavaScript TypedArray API in elm",
     "repository": "https://github.com/mpizenberg/elm-js-typed-array.git",
     "license": "MPL-2.0",
     "source-directories": [
