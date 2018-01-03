@@ -421,6 +421,14 @@ indexedFilter =
 
 
 {-| Check if two typed arrays are equal.
+_WARNING: using the `(==)` operator yields wrong results._
+For example:
+
+    JsUint8Array.fromList [] == JsUint8Array.fromList [42]
+    --> True
+
+For this reason, we need to introduce a specific function
+to check that two typed arrays are equal.
 
     typedArray1 =
         JsUint8Array.fromList [0, 14, 42]
@@ -439,30 +447,10 @@ indexedFilter =
 
 -}
 equal : JsTypedArray a b -> JsTypedArray a b -> Bool
-equal typedArray1 typedArray2 =
-    -- benchmark if Native is a lot faster or not.
-    -- equal =
-    --     Native.JsTypedArray.equal
-    let
-        length1 =
-            length typedArray1
-
-        length2 =
-            length typedArray2
-    in
-    if length1 /= length2 then
-        False
-    else
-        let
-            helper i =
-                if i >= length1 then
-                    True
-                else if unsafeGetAt i typedArray1 == unsafeGetAt i typedArray2 then
-                    helper (i + 1)
-                else
-                    False
-        in
-        helper 0
+equal =
+    -- Native implementation is roughly 10 times faster.
+    -- I believe the (==) operator is very heavy.
+    Native.JsTypedArray.equal
 
 
 
