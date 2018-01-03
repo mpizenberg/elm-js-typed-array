@@ -3,6 +3,7 @@ module JsFloat64Array
         ( fromArray
         , fromBuffer
         , fromList
+        , fromTypedArray
         , initialize
         , repeat
         , zeros
@@ -15,7 +16,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
-@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray
 
 -}
 
@@ -143,3 +144,17 @@ Complexity: O(length).
 fromList : List Float -> JsTypedArray Float64 Float
 fromList list =
     Native.JsFloat64Array.fromList (List.length list) list
+
+
+{-| Convert from another typed array.
+
+Complexity: O(length).
+
+    JsUint8Array.fromList [0, 14, 42]
+        |> JsFloat64Array.fromTypedArray
+    --> { 0 = 0, 1 = 14, 2 = 42 } : JsTypedArray Float64 Float
+
+-}
+fromTypedArray : JsTypedArray a b -> JsTypedArray Float64 Float
+fromTypedArray =
+    Native.JsFloat64Array.fromTypedArray

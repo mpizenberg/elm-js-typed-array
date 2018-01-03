@@ -3,6 +3,7 @@ module JsUint8Array
         ( fromArray
         , fromBuffer
         , fromList
+        , fromTypedArray
         , initialize
         , repeat
         , zeros
@@ -15,7 +16,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray
 
 -}
 
@@ -140,3 +141,18 @@ Complexity: O(length).
 fromList : List Int -> JsTypedArray Uint8 Int
 fromList list =
     Native.JsUint8Array.fromList (List.length list) list
+
+
+{-| Convert from another typed array.
+Numbers are truncated, not rounded.
+
+Complexity: O(length).
+
+    JsFloat64Array.fromList [0, -1.6, 14.66, 257]
+        |> JsUint8Array.fromTypedArray
+    --> { 0 = 0, 1 = 255, 2 = 14, 3 = 1 } : JsTypedArray Uint8 Int
+
+-}
+fromTypedArray : JsTypedArray a b -> JsTypedArray Uint8 Int
+fromTypedArray =
+    Native.JsUint8Array.fromTypedArray

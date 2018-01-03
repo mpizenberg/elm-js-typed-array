@@ -31,11 +31,21 @@ var _mpizenberg$elm_js_typed_array$Native_JsUint8Array = (function() {
     return typedArray;
   }
 
+  function fromTypedArray(typedArray) {
+    var length = typedArray.length;
+    var newTypedArray = new Uint8Array(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = typedArray[i];
+    }
+    return newTypedArray;
+  }
+
   return {
     zeros: zeros,
     repeat: F2(repeat),
     initialize: F2(initialize),
     fromBuffer: F3(fromBuffer),
-    fromList: F2(fromList)
+    fromList: F2(fromList),
+    fromTypedArray: fromTypedArray
   };
 })();
