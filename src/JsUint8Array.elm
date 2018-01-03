@@ -111,14 +111,22 @@ fromBuffer byteOffset length buffer =
         Ok (Native.JsUint8Array.fromBuffer byteOffset length buffer)
 
 
-{-| Initialize from an array of integers.
+{-| Create a typed array from an elm Array.
 
-TODO
+Complexity: O(length)
+
+    JsUint8Array.fromArray (Array.repeat 3 42)
+    --> { 0 = 42, 1 = 42, 2 = 42 }
 
 -}
 fromArray : Array Int -> JsTypedArray Uint8 Int
 fromArray array =
-    Debug.crash "TODO"
+    let
+        arrayValue n =
+            Array.get n array
+                |> Maybe.withDefault 0
+    in
+    initialize (Array.length array) arrayValue
 
 
 {-| Initialize from a list of integers.

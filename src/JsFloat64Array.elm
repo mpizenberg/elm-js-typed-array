@@ -114,11 +114,22 @@ fromBuffer byteOffset length buffer =
         Ok (Native.JsFloat64Array.fromBuffer byteOffset length buffer)
 
 
-{-| Initialize from an array of integers.
+{-| Create a typed array from an elm Array.
+
+Complexity: O(length)
+
+    JsFloat64Array.fromArray (Array.repeat 3 0.42)
+    --> { 0 = 0.42, 1 = 0.42, 2 = 0.42 }
+
 -}
 fromArray : Array Float -> JsTypedArray Float64 Float
 fromArray array =
-    Debug.crash "TODO"
+    let
+        arrayValue n =
+            Array.get n array
+                |> Maybe.withDefault 0
+    in
+    initialize (Array.length array) arrayValue
 
 
 {-| Initialize from a list of floats.
