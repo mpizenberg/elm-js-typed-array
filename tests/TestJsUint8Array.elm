@@ -3,6 +3,7 @@ module TestJsUint8Array
         ( encodeDecodeRoundTrip
         , fromArray
         , fromBuffer
+        , fromList
         , fromTypedArray
         , initialize
         , repeat
@@ -96,6 +97,15 @@ initialize =
                 JsTypedArray.equal typedArray fromList
                     |> Expect.true "Initialize array coherent with generated from list"
         ]
+
+
+fromList : Test
+fromList =
+    fuzz (Fuzz.list <| Fuzz.intRange 0 255) "From List to List round trip" <|
+        \list ->
+            JsUint8Array.fromList list
+                |> JsTypedArray.toList
+                |> Expect.equal list
 
 
 fromArray : Test

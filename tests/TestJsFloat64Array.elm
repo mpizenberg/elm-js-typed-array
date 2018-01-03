@@ -3,6 +3,7 @@ module TestJsFloat64Array
         ( encodeDecodeRoundTrip
         , fromArray
         , fromBuffer
+        , fromList
         , fromTypedArray
         , initialize
         , repeat
@@ -128,6 +129,15 @@ initialize =
                 JsTypedArray.equal typedArray fromList
                     |> Expect.true "Initialize array coherent with generated from list"
         ]
+
+
+fromList : Test
+fromList =
+    fuzz (Fuzz.list Fuzz.float) "From List to List round trip" <|
+        \list ->
+            JsFloat64Array.fromList list
+                |> JsTypedArray.toList
+                |> Expect.equal list
 
 
 fromArray : Test
