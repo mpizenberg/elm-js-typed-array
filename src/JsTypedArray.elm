@@ -8,6 +8,7 @@ module JsTypedArray
         , append
         , buffer
         , bufferOffset
+        , encode
         , equal
         , extract
         , filter
@@ -57,7 +58,7 @@ See for example the function `JsUint8Array.zeros : Int -> JsTypedArray Uint8 Int
 in the `JsUint8Array` module.
 
 
-# Interoperability with elm List and Array
+# Interoperability
 
 There are `fromList` and `fromArray` functions available in dedicated modules.
 For example, in module `JsUint8Array`:
@@ -69,6 +70,13 @@ For example, in module `JsUint8Array`:
 In this module are provided the `toList` and `toArray` polymorphic functions.
 
 @docs toList, toArray
+
+Encoders and decoders are providing instant data exchange through ports.
+The typed arrays are not "converted" since they already are JavaScript values.
+A `decode` function is available in each dedicated modules,
+and the polymorphic `encode` function is in this module.
+
+@docs encode
 
 
 # Basic Requests
@@ -124,6 +132,7 @@ Indexed versions of reducers.
 
 import Array exposing (Array)
 import JsArrayBuffer exposing (JsArrayBuffer)
+import Json.Encode as Encode
 import Native.JsTypedArray
 
 
@@ -188,6 +197,14 @@ toArray typedArray =
             unsafeGetAt n typedArray
     in
     Array.initialize (length typedArray) init
+
+
+{-| Encode a `JsTypedArray` into a JavaScript `Value`
+that can be sent through ports.
+-}
+encode : JsTypedArray a b -> Encode.Value
+encode =
+    Native.JsTypedArray.encode
 
 
 

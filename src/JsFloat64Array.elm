@@ -1,6 +1,7 @@
 module JsFloat64Array
     exposing
-        ( fromArray
+        ( decode
+        , fromArray
         , fromBuffer
         , fromList
         , fromTypedArray
@@ -16,13 +17,14 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
-@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, decode
 
 -}
 
 import Array exposing (Array)
 import JsArrayBuffer exposing (JsArrayBuffer)
 import JsTypedArray exposing (Float64, JsTypedArray)
+import Json.Decode as Decode exposing (Decoder)
 import Native.JsFloat64Array
 
 
@@ -158,3 +160,19 @@ Complexity: O(length).
 fromTypedArray : JsTypedArray a b -> JsTypedArray Float64 Float
 fromTypedArray =
     Native.JsFloat64Array.fromTypedArray
+
+
+{-| `JsTypedArray Float64 Float` decoder.
+
+_WARNING: throws an error if the value you are trying to decode
+is not of type `Float64Array`._
+
+-}
+decode : Decoder (JsTypedArray Float64 Int)
+decode =
+    Decode.map fromValue Decode.value
+
+
+fromValue : Decode.Value -> JsTypedArray Float64 Int
+fromValue =
+    Native.JsFloat64Array.fromValue

@@ -40,12 +40,20 @@ var _mpizenberg$elm_js_typed_array$Native_JsFloat64Array = (function() {
     return newTypedArray;
   }
 
+  function fromValue(value) {
+    if (!(value instanceof Float64Array)) {
+      throw "This is not a Float64Array";
+    }
+    return value;
+  }
+
   return {
     zeros: zeros,
     repeat: F2(repeat),
     initialize: F2(initialize),
     fromBuffer: F3(fromBuffer),
     fromList: F2(fromList),
-    fromTypedArray: fromTypedArray
+    fromTypedArray: fromTypedArray,
+    fromValue: fromValue
   };
 })();

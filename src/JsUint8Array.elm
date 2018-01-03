@@ -1,6 +1,7 @@
 module JsUint8Array
     exposing
-        ( fromArray
+        ( decode
+        , fromArray
         , fromBuffer
         , fromList
         , fromTypedArray
@@ -16,13 +17,14 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, decode
 
 -}
 
 import Array exposing (Array)
 import JsArrayBuffer exposing (JsArrayBuffer)
 import JsTypedArray exposing (JsTypedArray, Uint8)
+import Json.Decode as Decode exposing (Decoder)
 import Native.JsUint8Array
 
 
@@ -156,3 +158,19 @@ Complexity: O(length).
 fromTypedArray : JsTypedArray a b -> JsTypedArray Uint8 Int
 fromTypedArray =
     Native.JsUint8Array.fromTypedArray
+
+
+{-| `JsTypedArray Uint8 Int` decoder.
+
+_WARNING: throws an error if the value you are trying to decode
+is not of type `Uint8Array`._
+
+-}
+decode : Decoder (JsTypedArray Uint8 Int)
+decode =
+    Decode.map fromValue Decode.value
+
+
+fromValue : Decode.Value -> JsTypedArray Uint8 Int
+fromValue =
+    Native.JsUint8Array.fromValue

@@ -1,6 +1,10 @@
 // import Maybe //
 
 var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
+  function encode(typedArray) {
+    return typedArray;
+  }
+
   function length(typedArray) {
     return typedArray.length;
   }
@@ -287,6 +291,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
   }
 
   return {
+    encode: encode,
     length: length,
     getAt: F2(getAt),
     buffer: buffer,
