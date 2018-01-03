@@ -525,7 +525,6 @@ append =
 
 
 {-| Replace a segment [start, end[ of the array by a constant value.
-Internally uses `TypedArray.prototype.fill`.
 
 Negative indices are counted backward from end of array.
 
@@ -537,8 +536,18 @@ Complexity: O(length).
 
 -}
 replaceWithConstant : Int -> Int -> b -> JsTypedArray a b -> JsTypedArray a b
-replaceWithConstant =
-    Native.JsTypedArray.replaceWithConstant
+replaceWithConstant start end constant typedArray =
+    let
+        typedArrayLength =
+            length typedArray
+
+        newStart =
+            min typedArrayLength <| positiveIndex typedArrayLength start
+
+        newEnd =
+            max newStart <| min typedArrayLength <| positiveIndex typedArrayLength end
+    in
+    Native.JsTypedArray.replaceWithConstant newStart newEnd constant typedArray
 
 
 {-| Apply a function to every element of the array.
@@ -652,18 +661,18 @@ reverseSort =
 
 
 {-| Join array values in a string using the given separator.
-Internally uses `TypedArray.prototype.join`.
 
 Complexity: O(length).
 
     JsUint8Array.fromList [0, 14, 42]
-        |> JsTypedArray.join ','
+        |> JsTypedArray.join ","
     --> "0,14,42"
 
 -}
-join : Char -> JsTypedArray a b -> String
-join =
-    Native.JsTypedArray.join
+join : String -> JsTypedArray a b -> String
+join str typedArray =
+    foldr (\x acc -> toString x :: acc) [] typedArray
+        |> String.join str
 
 
 {-| Reduce the array from the left.
@@ -854,3 +863,17 @@ foldlr f initialValue typedArray1 typedArray2 =
             extract (length2 - newLength) length2 typedArray2
     in
     Native.JsTypedArray.foldlr f initialValue newArray1 newArray2
+
+
+
+-- HELPER ############################################################
+
+
+{-| Returns a positive index.
+-}
+positiveIndex : Int -> Int -> Int
+positiveIndex length idx =
+    if idx < 0 then
+        max 0 (length + idx)
+    else
+        idx

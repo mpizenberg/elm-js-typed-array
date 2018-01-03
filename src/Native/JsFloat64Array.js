@@ -5,7 +5,10 @@ var _mpizenberg$elm_js_typed_array$Native_JsFloat64Array = (function() {
 
   function repeat(length, constant) {
     var typedArray = new Float64Array(length);
-    return typedArray.fill(constant);
+    for (var i = 0; i < length; i++) {
+      typedArray[i] = constant;
+    }
+    return typedArray;
   }
 
   function initialize(length, f) {

@@ -36,7 +36,7 @@ lengthFuzzer =
 arrayIndex : Int -> Int -> Int
 arrayIndex length idx =
     if idx < 0 then
-        max 0 (length - idx)
+        max 0 (length + idx)
     else
         idx
 
@@ -215,7 +215,7 @@ extract =
 
                     _ ->
                         Expect.fail "This branch is never called"
-        , fuzz3 lengthFuzzer lengthFuzzer lengthFuzzer "Extract with any indices" <|
+        , fuzz3 lengthFuzzer Fuzz.int Fuzz.int "Extract with any indices" <|
             \length start end ->
                 let
                     typedArray =
@@ -409,23 +409,13 @@ join =
             \typedArray ->
                 let
                     separator =
-                        ','
+                        ","
 
-                    joinedArray : String
-                    joinedArray =
-                        JsTypedArray.join separator typedArray
-
-                    accFunction : Int -> a -> List String -> List String
-                    accFunction _ num numStrList =
-                        if List.isEmpty numStrList then
-                            [ toString num ]
-                        else
-                            toString num :: String.fromChar separator :: numStrList
-
-                    foldedArray : List String
-                    foldedArray =
-                        JsTypedArray.indexedFoldr accFunction [] typedArray
+                    stringList =
+                        typedArray
+                            |> JsTypedArray.toList
+                            |> List.map toString
                 in
-                joinedArray
-                    |> Expect.equal (String.concat foldedArray)
+                JsTypedArray.join separator typedArray
+                    |> Expect.equal (String.join separator stringList)
         ]

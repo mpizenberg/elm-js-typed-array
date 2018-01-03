@@ -151,8 +151,18 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
   }
 
   function replaceWithConstant(start, end, constant, typedArray) {
-    var copiedTypedArray = typedArray.slice();
-    return copiedTypedArray.fill(constant, start, end);
+    var length = typedArray.length;
+    var newTypedArray = new typedArray.constructor(length);
+    for (var i = 0; i < start; i++) {
+      newTypedArray[i] = typedArray[i];
+    }
+    for (var i = start; i < end; i++) {
+      newTypedArray[i] = constant;
+    }
+    for (var i = end; i < length; i++) {
+      newTypedArray[i] = typedArray[i];
+    }
+    return newTypedArray;
   }
 
   function map(f, typedArray) {
@@ -192,25 +202,33 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
   }
 
   function reverse(typedArray) {
-    var copiedTypedArray = typedArray.slice();
-    return copiedTypedArray.reverse();
+    var length = typedArray.length;
+    var newTypedArray = new typedArray.constructor(length);
+    for (var i = 0; i < length; i++) {
+      newTypedArray[i] = typedArray[length - 1 - i];
+    }
+    return newTypedArray;
   }
 
   function sort(typedArray) {
-    var copiedTypedArray = typedArray.slice();
+    var length = typedArray.length;
+    var copiedTypedArray = new typedArray.constructor(length);
+    for (var i = 0; i < length; i++) {
+      copiedTypedArray[i] = typedArray[i];
+    }
     return copiedTypedArray.sort();
   }
 
   function reverseSort(typedArray) {
+    var length = typedArray.length;
+    var copiedTypedArray = new typedArray.constructor(length);
+    for (var i = 0; i < length; i++) {
+      copiedTypedArray[i] = typedArray[i];
+    }
     function greaterThan(x, y) {
       return y - x;
     }
-    var copiedTypedArray = typedArray.slice();
     return copiedTypedArray.sort(greaterThan);
-  }
-
-  function join(separator, typedArray) {
-    return typedArray.join(separator);
   }
 
   function foldl(f, initialValue, typedArray) {
@@ -315,7 +333,6 @@ var _mpizenberg$elm_js_typed_array$Native_JsTypedArray = (function() {
     reverse: reverse,
     sort: sort,
     reverseSort: reverseSort,
-    join: F2(join),
     foldl: F3(foldl),
     foldr: F3(foldr),
     foldl2: F4(foldl2),
