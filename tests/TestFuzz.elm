@@ -14,7 +14,7 @@ import Random
 
 maxLength : Int
 maxLength =
-    16000
+    100
 
 
 length : Fuzzer Int

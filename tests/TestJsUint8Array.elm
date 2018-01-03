@@ -1,14 +1,22 @@
 module TestJsUint8Array
     exposing
-        ( fromBuffer
+        ( encodeDecodeRoundTrip
+        , fromArray
+        , fromBuffer
+        , fromTypedArray
+        , initialize
+        , repeat
         , zeros
         )
 
+import Array
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
 import JsArrayBuffer exposing (JsArrayBuffer)
+import JsFloat64Array
 import JsTypedArray
 import JsUint8Array
+import Json.Decode as Decode
 import Random
 import Test exposing (..)
 import TestFuzz
@@ -24,29 +32,105 @@ negativeInt =
     Fuzz.intRange Random.minInt -1
 
 
-maxLength : Int
-maxLength =
-    1000 // elementSize
-
-
-lengthFuzzer : Fuzzer Int
-lengthFuzzer =
-    Fuzz.intRange 0 maxLength
-
-
 zeros : Test
 zeros =
-    describe "Initialization and length"
+    describe "Zeros"
         [ fuzz negativeInt "Initialize with negative length returns empty array" <|
             \length ->
                 JsUint8Array.zeros length
                     |> JsTypedArray.length
                     |> Expect.equal 0
-        , fuzz lengthFuzzer "Initialize with correct length" <|
+        , fuzz TestFuzz.length "Correct array of zeros" <|
             \length ->
-                JsUint8Array.zeros length
+                let
+                    typedArray =
+                        JsUint8Array.zeros length
+
+                    fromList =
+                        JsUint8Array.fromList (List.repeat length 0)
+                in
+                JsTypedArray.equal typedArray fromList
+                    |> Expect.true "Zeros array coherent with generated from list"
+        ]
+
+
+repeat : Test
+repeat =
+    describe "Repeat"
+        [ fuzz negativeInt "Initialize with negative length returns empty array" <|
+            \length ->
+                JsUint8Array.repeat length 42
                     |> JsTypedArray.length
-                    |> Expect.equal length
+                    |> Expect.equal 0
+        , fuzz TestFuzz.length "Correct array" <|
+            \length ->
+                let
+                    typedArray =
+                        JsUint8Array.repeat length 42
+
+                    fromList =
+                        JsUint8Array.fromList (List.repeat length 42)
+                in
+                JsTypedArray.equal typedArray fromList
+                    |> Expect.true "Repeat array coherent with generated from list"
+        ]
+
+
+initialize : Test
+initialize =
+    describe "Initialize"
+        [ fuzz negativeInt "Initialize with negative length returns empty array" <|
+            \length ->
+                JsUint8Array.initialize length identity
+                    |> JsTypedArray.length
+                    |> Expect.equal 0
+        , fuzz TestFuzz.length "Correct array" <|
+            \length ->
+                let
+                    typedArray =
+                        JsUint8Array.initialize length identity
+
+                    fromList =
+                        JsUint8Array.fromList (List.range 0 (length - 1))
+                in
+                JsTypedArray.equal typedArray fromList
+                    |> Expect.true "Initialize array coherent with generated from list"
+        ]
+
+
+fromArray : Test
+fromArray =
+    describe "From Array"
+        [ fuzz (Fuzz.list Fuzz.int) "Correct array" <|
+            \list ->
+                let
+                    fromArray =
+                        JsUint8Array.fromArray <| Array.fromList list
+
+                    fromList =
+                        JsUint8Array.fromList list
+                in
+                JsTypedArray.equal fromArray fromList
+                    |> Expect.true "fromArray coherent with fromList"
+        ]
+
+
+fromTypedArray : Test
+fromTypedArray =
+    describe "From Typed Array"
+        [ fuzz (Fuzz.list Fuzz.float) "Correct array" <|
+            \list ->
+                let
+                    fromTypedArray =
+                        JsFloat64Array.fromList list
+                            |> JsUint8Array.fromTypedArray
+
+                    fromList =
+                        List.map truncate list
+                            |> JsUint8Array.fromList
+                in
+                JsTypedArray.equal fromTypedArray fromList
+                    |> Expect.true "fromTypedArray coherent with truncated fromList"
         ]
 
 
@@ -81,3 +165,15 @@ fromBuffer =
                             , JsTypedArray.bufferOffset >> Expect.equal byteOffset
                             , JsTypedArray.buffer >> Expect.equal buffer
                             ]
+
+
+encodeDecodeRoundTrip : Test
+encodeDecodeRoundTrip =
+    fuzz TestFuzz.jsUint8Array "Encode-Decode round trip" <|
+        \typedArray ->
+            typedArray
+                |> JsTypedArray.encode
+                |> Decode.decodeValue JsUint8Array.decode
+                |> Result.withDefault (JsUint8Array.zeros 0)
+                |> JsTypedArray.equal typedArray
+                |> Expect.true "Encode-Decode round trip"
