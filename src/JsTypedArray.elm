@@ -36,6 +36,8 @@ module JsTypedArray
         , reverse
         , reverseSort
         , sort
+        , toArray
+        , toList
         , unsafeGetAt
         )
 
@@ -53,6 +55,20 @@ The list of all JavaScript typed arrays representable is as below:
 Functions to initialize typed arrays are in their dedicated modules.
 See for example the function `JsUint8Array.zeros : Int -> JsTypedArray Uint8 Int`
 in the `JsUint8Array` module.
+
+
+# Interoperability with elm List and Array
+
+There are `fromList` and `fromArray` functions available in dedicated modules.
+For example, in module `JsUint8Array`:
+
+    JsUint8Array.fromList : List Int -> JsTypedArray Uint8 Int
+
+    JsUint8Array.fromArray : Array Int -> JsTypedArray Uint8 Int
+
+In this module are provided the `toList` and `toArray` polymorphic functions.
+
+@docs toList, toArray
 
 
 # Basic Requests
@@ -106,6 +122,7 @@ Indexed versions of reducers.
 
 -}
 
+import Array exposing (Array)
 import JsArrayBuffer exposing (JsArrayBuffer)
 import Native.JsTypedArray
 
@@ -139,6 +156,38 @@ type Uint8
 -}
 type Float64
     = Float64
+
+
+
+-- INTEROPERABILITY ##################################################
+
+
+{-| Convert a typed array to a list.
+
+    JsUint8Array.fromList [ 0, 14, 42 ]
+        |> JsTypedArray.toList
+    --> [ 0, 14, 42 ]
+
+-}
+toList : JsTypedArray a b -> List b
+toList =
+    foldr (\x acc -> x :: acc) []
+
+
+{-| Convert a typed array to an array.
+
+    JsUint8Array.fromList [ 0, 14, 42 ]
+        |> JsTypedArray.toArray
+    --> Array.fromList [0,14,42]
+
+-}
+toArray : JsTypedArray a b -> Array b
+toArray typedArray =
+    let
+        init n =
+            unsafeGetAt n typedArray
+    in
+    Array.initialize (length typedArray) init
 
 
 
