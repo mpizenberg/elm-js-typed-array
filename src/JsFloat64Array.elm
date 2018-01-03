@@ -168,11 +168,11 @@ _WARNING: throws an error if the value you are trying to decode
 is not of type `Float64Array`._
 
 -}
-decode : Decoder (JsTypedArray Float64 Int)
+decode : Decoder (JsTypedArray Float64 Float)
 decode =
     Decode.map fromValue Decode.value
 
 
-fromValue : Decode.Value -> JsTypedArray Float64 Int
+fromValue : Decode.Value -> JsTypedArray Float64 Float
 fromValue =
     Native.JsFloat64Array.fromValue
