@@ -21,7 +21,7 @@ This library aims at providing the
  * be **interoperable** with elm data structures:
    * from elm data structures: `fromList`, `fromArray`
    * to elm data structures: `toList`, `toArray`
- * be interoperable with JavaScript: encoders / decoders
+ * be interoperable with JavaScript: 0-cost encoders / decoders
  * be **flexible** yet **efficient**:
    * most functions are benchmarked and optimized
    * most functions are also provided in an "indexed" form
