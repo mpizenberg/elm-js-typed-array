@@ -3,6 +3,7 @@ module TestJsTypedArray
         ( all
         , any
         , extract
+        , filter
         , findIndex
         , getAt
         , indexedAll
@@ -306,6 +307,39 @@ indexedFindIndex =
                     JsUint8Array.zeros length
                         |> JsTypedArray.indexedFindIndex (\id _ -> id == index)
                         |> Expect.equal Nothing
+        ]
+
+
+filter : Test
+filter =
+    describe "filter"
+        [ fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Split at index" <|
+            \length index ->
+                let
+                    rangeArray =
+                        JsUint8Array.initialize length identity
+
+                    biggerThanIndex n =
+                        index < n
+
+                    biggerArray =
+                        JsTypedArray.filter biggerThanIndex rangeArray
+
+                    smallerArray =
+                        JsTypedArray.filter (not << biggerThanIndex) rangeArray
+
+                    bigLength =
+                        JsTypedArray.length biggerArray
+
+                    smallLength =
+                        JsTypedArray.length smallerArray
+                in
+                Expect.all
+                    [ \_ -> Expect.equal length (bigLength + smallLength)
+                    , \_ -> Expect.true "" <| JsTypedArray.all biggerThanIndex biggerArray
+                    , \_ -> Expect.false "" <| JsTypedArray.any biggerThanIndex smallerArray
+                    ]
+                    ()
         ]
 
 
