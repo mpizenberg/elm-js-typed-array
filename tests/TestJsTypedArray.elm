@@ -16,6 +16,7 @@ module TestJsTypedArray
         , indexedMap2
         , join
         , map
+        , map2
         , replaceWithConstant
         , reverse
         , reverseSort
@@ -168,6 +169,50 @@ indexedMap =
                     |> JsTypedArray.indexedMap (\id _ -> id)
                     |> JsTypedArray.indexedAll (\id value -> id % 256 == value)
                     |> Expect.true "All values set to index"
+        ]
+
+
+map2 : Test
+map2 =
+    describe "map2"
+        [ fuzz2 TestFuzz.length TestFuzz.length "Result has length of smaller array" <|
+            \l1 l2 ->
+                let
+                    typedArray1 =
+                        JsUint8Array.zeros l1
+
+                    typedArray2 =
+                        JsUint8Array.zeros l2
+
+                    resultArray =
+                        JsTypedArray.map2 (\_ _ -> 42) typedArray1 typedArray2
+                in
+                JsTypedArray.length resultArray
+                    |> Expect.equal (min l1 l2)
+        , fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Map2 which keep only first array ok" <|
+            \typedArray1 typedArray2 ->
+                let
+                    length1 =
+                        JsTypedArray.length typedArray1
+
+                    length2 =
+                        JsTypedArray.length typedArray2
+                in
+                JsTypedArray.map2 (\first _ -> first) typedArray1 typedArray2
+                    |> JsTypedArray.equal (JsTypedArray.extract 0 (min length1 length2) typedArray1)
+                    |> Expect.true ""
+        , fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Map2 which keep only second array ok" <|
+            \typedArray1 typedArray2 ->
+                let
+                    length1 =
+                        JsTypedArray.length typedArray1
+
+                    length2 =
+                        JsTypedArray.length typedArray2
+                in
+                JsTypedArray.map2 (\_ second -> second) typedArray1 typedArray2
+                    |> JsTypedArray.equal (JsTypedArray.extract 0 (min length1 length2) typedArray2)
+                    |> Expect.true ""
         ]
 
 
