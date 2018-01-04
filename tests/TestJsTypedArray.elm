@@ -15,6 +15,7 @@ module TestJsTypedArray
         , indexedMap
         , indexedMap2
         , join
+        , map
         , replaceWithConstant
         , reverse
         , reverseSort
@@ -131,6 +132,24 @@ indexedAny =
                         |> Expect.true "True if predicate returns True one time"
                 else
                     Expect.pass
+        ]
+
+
+map : Test
+map =
+    describe "map"
+        [ fuzz TestFuzz.length "map preserve length" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.map (\_ -> 42)
+                    |> JsTypedArray.length
+                    |> Expect.equal length
+        , fuzz TestFuzz.length "map coherent" <|
+            \length ->
+                JsUint8Array.initialize length identity
+                    |> JsTypedArray.map (\n -> n * n)
+                    |> JsTypedArray.indexedAll (\id value -> id * id % 256 == value)
+                    |> Expect.true "Squared values valid"
         ]
 
 
