@@ -3,6 +3,7 @@ module TestJsTypedArray
         ( all
         , any
         , extract
+        , findIndex
         , getAt
         , indexedAll
         , indexedAny
@@ -272,6 +273,22 @@ getAt =
                 else
                     JsUint8Array.zeros length
                         |> JsTypedArray.getAt index
+                        |> Expect.equal Nothing
+        ]
+
+
+findIndex : Test
+findIndex =
+    describe "findIndex"
+        [ fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Find at random index" <|
+            \length index ->
+                if index < length then
+                    JsUint8Array.initialize length identity
+                        |> JsTypedArray.findIndex (\n -> n == index)
+                        |> Expect.equal (Just index)
+                else
+                    JsUint8Array.initialize length identity
+                        |> JsTypedArray.findIndex (\n -> n == index)
                         |> Expect.equal Nothing
         ]
 
