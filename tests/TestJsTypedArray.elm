@@ -1,6 +1,7 @@
 module TestJsTypedArray
     exposing
-        ( extract
+        ( all
+        , extract
         , getAt
         , indexedAll
         , indexedAny
@@ -39,6 +40,30 @@ arrayIndex length idx =
         max 0 (length + idx)
     else
         idx
+
+
+all : Test
+all =
+    describe "all"
+        [ test "Elements of empty array verify any predicate" <|
+            \_ ->
+                JsUint8Array.zeros 0
+                    |> JsTypedArray.all (\_ -> False)
+                    |> Expect.true "Elements of empty array verify any predicate"
+        , fuzz lengthFuzzer "True predicate on all elements returns True" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.all (\_ -> True)
+                    |> Expect.true "True predicate on all elements returns True"
+        , fuzz lengthFuzzer "Returns False if predicate returns False one time" <|
+            \length ->
+                if length > 0 then
+                    JsUint8Array.initialize length identity
+                        |> JsTypedArray.all (\n -> n /= (length - 1) % 256)
+                        |> Expect.false "Returns False if predicate returns False one time"
+                else
+                    Expect.pass
+        ]
 
 
 indexedAll : Test
