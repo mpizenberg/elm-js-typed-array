@@ -266,8 +266,7 @@ getAt =
         [ fuzz2 TestFuzz.length Fuzz.int "Get value at random index" <|
             \length index ->
                 if 0 <= index && index < length then
-                    JsUint8Array.zeros length
-                        |> JsTypedArray.indexedMap (\id _ -> id)
+                    JsUint8Array.initialize length identity
                         |> JsTypedArray.getAt index
                         |> Expect.equal (Just <| index % 256)
                 else
