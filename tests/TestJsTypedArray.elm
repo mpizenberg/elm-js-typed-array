@@ -606,23 +606,20 @@ foldr =
 indexedFoldr : Test
 indexedFoldr =
     describe "indexedFoldr"
-        [ fuzz TestFuzz.length "Length equals fold with (+1)" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.indexedFoldr (\_ _ v -> v + 1) 0
-                    |> Expect.equal length
-        , fuzz TestFuzz.length "Sum of zeros equals zero" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.indexedFoldr (\_ v sum -> sum + v) 0
-                    |> Expect.equal 0
-        , fuzz TestFuzz.jsUint8Array "Cons foldr equals identity" <|
+        [ fuzz TestFuzz.jsUint8Array "is equivalent to indexedFoldl on reverse" <|
             \typedArray ->
-                typedArray
-                    |> JsTypedArray.indexedFoldr (always (::)) []
-                    |> JsUint8Array.fromList
-                    |> JsTypedArray.equal typedArray
-                    |> Expect.true "Both arrays should be equal"
+                let
+                    length =
+                        JsTypedArray.length typedArray
+
+                    concatPair index value acc =
+                        ( index, value ) :: acc
+
+                    concatPairRight index value acc =
+                        ( length - 1 - index, value ) :: acc
+                in
+                JsTypedArray.indexedFoldl concatPair [] (JsTypedArray.reverse typedArray)
+                    |> Expect.equal (JsTypedArray.indexedFoldr concatPairRight [] typedArray)
         ]
 
 
