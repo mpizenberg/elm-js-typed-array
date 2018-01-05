@@ -431,7 +431,7 @@ reverse =
                     |> JsTypedArray.reverse
                     |> JsTypedArray.reverse
                     |> JsTypedArray.equal typedArray
-                    |> Expect.true ""
+                    |> Expect.true "Double reverse should be identity"
         ]
 
 
