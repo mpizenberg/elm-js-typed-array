@@ -27,7 +27,7 @@ module TestJsTypedArray
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
-import JsTypedArray
+import JsTypedArray exposing (JsTypedArray, Uint8)
 import JsUint8Array
 import String
 import Test exposing (..)
@@ -310,36 +310,48 @@ indexedFindIndex =
         ]
 
 
+splitArrays : Int -> Int -> { bigger : JsTypedArray Uint8 Int, smaller : JsTypedArray Uint8 Int }
+splitArrays length index =
+    let
+        rangeArray =
+            JsUint8Array.initialize length identity
+
+        biggerThanIndex n =
+            index < n
+    in
+    { bigger = JsTypedArray.filter biggerThanIndex rangeArray
+    , smaller = JsTypedArray.filter (not << biggerThanIndex) rangeArray
+    }
+
+
+{-| Function reorganized by R. Feldman: [Discourse post][post]
+
+[post]: https://discourse.elm-lang.org/t/why-isnt-there-a-simpler-expect-all-test/466
+
+-}
 filter : Test
 filter =
     describe "filter"
-        [ fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Split at index" <|
+        [ fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Sum of lengths equal original length" <|
             \length index ->
                 let
-                    rangeArray =
-                        JsUint8Array.initialize length identity
-
-                    biggerThanIndex n =
-                        index < n
-
-                    biggerArray =
-                        JsTypedArray.filter biggerThanIndex rangeArray
-
-                    smallerArray =
-                        JsTypedArray.filter (not << biggerThanIndex) rangeArray
-
-                    bigLength =
-                        JsTypedArray.length biggerArray
-
-                    smallLength =
-                        JsTypedArray.length smallerArray
+                    { smaller, bigger } =
+                        splitArrays length index
                 in
-                Expect.all
-                    [ \_ -> Expect.equal length (bigLength + smallLength)
-                    , \_ -> Expect.true "" <| JsTypedArray.all biggerThanIndex biggerArray
-                    , \_ -> Expect.false "" <| JsTypedArray.any biggerThanIndex smallerArray
-                    ]
-                    ()
+                (JsTypedArray.length smaller + JsTypedArray.length bigger)
+                    |> Expect.equal length
+        , fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Bigger array contains bigger elements according to JsTypedArray.all" <|
+            \length index ->
+                splitArrays length index
+                    |> .bigger
+                    |> JsTypedArray.all (\num -> index < num)
+                    |> Expect.true "All elements should have been bigger than their index in the array"
+        , fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Smaller array contains smaller elements according to JsTypedArray.any" <|
+            \length index ->
+                splitArrays length index
+                    |> .smaller
+                    |> JsTypedArray.any (\num -> index < num)
+                    |> Expect.false "No elements should have been bigger than their index in the array"
         ]
 
 
