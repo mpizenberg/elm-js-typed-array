@@ -2,6 +2,7 @@ module TestJsTypedArray
     exposing
         ( all
         , any
+        , equal
         , extract
         , filter
         , findIndex
@@ -45,6 +46,34 @@ arrayIndex length idx =
         max 0 (length + idx)
     else
         idx
+
+
+equal : Test
+equal =
+    describe "equal"
+        [ fuzz TestFuzz.jsUint8Array "is reflexive" <|
+            \typedArray ->
+                JsTypedArray.equal typedArray typedArray
+                    |> Expect.true "should be: array == array"
+        , fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "is symmetric" <|
+            \typedArray1 typedArray2 ->
+                JsTypedArray.equal typedArray1 typedArray2
+                    |> Expect.equal (JsTypedArray.equal typedArray2 typedArray1)
+        , fuzz3 TestFuzz.jsUint8Array TestFuzz.jsUint8Array TestFuzz.jsUint8Array "is transitive" <|
+            \typedArray1 typedArray2 typedArray3 ->
+                let
+                    equal12 =
+                        JsTypedArray.equal typedArray1 typedArray2
+
+                    equal23 =
+                        JsTypedArray.equal typedArray2 typedArray3
+
+                    equal13 =
+                        JsTypedArray.equal typedArray1 typedArray3
+                in
+                (not equal12 || not equal23 || equal13)
+                    |> Expect.true "a & b => c   should be equiv to   -a | -b | c"
+        ]
 
 
 all : Test
