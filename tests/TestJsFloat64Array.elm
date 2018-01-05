@@ -10,7 +10,6 @@ module TestJsFloat64Array
         , zeros
         )
 
-import Array
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
 import JsArrayBuffer exposing (JsArrayBuffer)
@@ -142,19 +141,11 @@ fromList =
 
 fromArray : Test
 fromArray =
-    describe "From Array"
-        [ fuzz (Fuzz.list Fuzz.float) "Correct array" <|
-            \list ->
-                let
-                    fromArray =
-                        JsFloat64Array.fromArray <| Array.fromList list
-
-                    fromList =
-                        JsFloat64Array.fromList list
-                in
-                JsTypedArray.equal fromArray fromList
-                    |> Expect.true "fromArray coherent with fromList"
-        ]
+    fuzz (Fuzz.array Fuzz.float) "From Array to Array round trip" <|
+        \array ->
+            JsFloat64Array.fromArray array
+                |> JsTypedArray.toArray
+                |> Expect.equal array
 
 
 fromTypedArray : Test
