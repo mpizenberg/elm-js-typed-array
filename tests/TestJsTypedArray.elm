@@ -9,6 +9,7 @@ module TestJsTypedArray
         , findIndex
         , foldl
         , foldl2
+        , foldlr
         , foldr
         , foldr2
         , getAt
@@ -780,6 +781,20 @@ indexedFoldr2 =
                 in
                 ( foldFirst, foldSecond )
                     |> Expect.equal ( fold2First, fold2Second )
+        ]
+
+
+foldlr : Test
+foldlr =
+    describe "foldlr"
+        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "is same as reverse second array" <|
+            \typedArray1 typedArray2 ->
+                let
+                    concatPair x1 x2 acc =
+                        ( x1, x2 ) :: acc
+                in
+                JsTypedArray.foldl2 concatPair [] typedArray1 (JsTypedArray.reverse typedArray2)
+                    |> Expect.equal (JsTypedArray.foldlr concatPair [] typedArray1 typedArray2)
         ]
 
 
