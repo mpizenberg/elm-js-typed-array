@@ -22,6 +22,7 @@ module TestJsTypedArray
         , indexedMap
         , indexedMap2
         , join
+        , length
         , map
         , map2
         , replaceWithConstant
@@ -73,6 +74,18 @@ equal =
                 in
                 (not equal12 || not equal23 || equal13)
                     |> Expect.true "a & b => c   should be equiv to   -a | -b | c"
+        ]
+
+
+length : Test
+length =
+    describe "length"
+        [ fuzz TestFuzz.length "of array from list" <|
+            \length ->
+                List.repeat length 0
+                    |> JsUint8Array.fromList
+                    |> JsTypedArray.length
+                    |> Expect.equal length
         ]
 
 
