@@ -43,14 +43,6 @@ import Test exposing (..)
 import TestFuzz
 
 
-arrayIndex : Int -> Int -> Int
-arrayIndex length idx =
-    if idx < 0 then
-        max 0 (length + idx)
-    else
-        idx
-
-
 equal : Test
 equal =
     describe "equal"
@@ -345,7 +337,7 @@ getAt =
 findIndex : Test
 findIndex =
     describe "findIndex"
-        [ fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Find at random index" <|
+        [ fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "at random index" <|
             \length index ->
                 if index < length then
                     JsUint8Array.initialize length identity
@@ -361,7 +353,7 @@ findIndex =
 indexedFindIndex : Test
 indexedFindIndex =
     describe "indexedFindIndex"
-        [ fuzz2 TestFuzz.length Fuzz.int "Find at random index" <|
+        [ fuzz2 TestFuzz.length Fuzz.int "at random index" <|
             \length index ->
                 if 0 <= index && index < length then
                     JsUint8Array.zeros length
@@ -372,20 +364,6 @@ indexedFindIndex =
                         |> JsTypedArray.indexedFindIndex (\id _ -> id == index)
                         |> Expect.equal Nothing
         ]
-
-
-splitArrays : Int -> Int -> { bigger : JsTypedArray Uint8 Int, smaller : JsTypedArray Uint8 Int }
-splitArrays length index =
-    let
-        rangeArray =
-            JsUint8Array.initialize length identity
-
-        biggerThanIndex n =
-            index < n
-    in
-    { bigger = JsTypedArray.filter biggerThanIndex rangeArray
-    , smaller = JsTypedArray.filter (not << biggerThanIndex) rangeArray
-    }
 
 
 {-| Function reorganized by R. Feldman: [Discourse post][post]
@@ -400,19 +378,19 @@ filter =
             \length index ->
                 let
                     { smaller, bigger } =
-                        splitArrays length index
+                        splitFilterArrays length index
                 in
                 (JsTypedArray.length smaller + JsTypedArray.length bigger)
                     |> Expect.equal length
         , fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Bigger array contains bigger elements according to JsTypedArray.all" <|
             \length index ->
-                splitArrays length index
+                splitFilterArrays length index
                     |> .bigger
                     |> JsTypedArray.all (\num -> index < num)
                     |> Expect.true "All elements should have been bigger than their index in the array"
         , fuzz2 TestFuzz.length (Fuzz.intRange 0 255) "Smaller array contains smaller elements according to JsTypedArray.any" <|
             \length index ->
-                splitArrays length index
+                splitFilterArrays length index
                     |> .smaller
                     |> JsTypedArray.any (\num -> index < num)
                     |> Expect.false "No elements should have been bigger than their index in the array"
@@ -440,18 +418,18 @@ indexedFilter =
 extract : Test
 extract =
     describe "extract"
-        [ fuzz3 TestFuzz.length TestFuzz.length TestFuzz.length "Extract with correct indices" <|
+        [ fuzz3 TestFuzz.length TestFuzz.length TestFuzz.length "with correct indices" <|
             \a b c ->
                 case List.sort [ a, b, c ] of
                     l1 :: l2 :: l3 :: [] ->
                         JsUint8Array.initialize l3 identity
                             |> JsTypedArray.extract l1 l2
                             |> JsTypedArray.indexedAll (\id value -> value == (id + l1) % 256)
-                            |> Expect.true "Values correspond to index extracted"
+                            |> Expect.true "Values should correspond to index extracted"
 
                     _ ->
-                        Expect.fail "This branch is never called"
-        , fuzz3 TestFuzz.length Fuzz.int Fuzz.int "Extract with any indices" <|
+                        Expect.fail "This branch should never be called"
+        , fuzz3 TestFuzz.length Fuzz.int Fuzz.int "with any indices" <|
             \length start end ->
                 let
                     typedArray =
@@ -502,12 +480,12 @@ replaceWithConstant =
 reverse : Test
 reverse =
     describe "reverse"
-        [ fuzz TestFuzz.jsUint8Array "Reversed list has same length than original list" <|
+        [ fuzz TestFuzz.jsUint8Array "has same length than original" <|
             \typedArray ->
                 JsTypedArray.reverse typedArray
                     |> JsTypedArray.length
                     |> Expect.equal (JsTypedArray.length typedArray)
-        , fuzz TestFuzz.jsUint8Array "Reverse is a symmetric application" <|
+        , fuzz TestFuzz.jsUint8Array "is a symmetric application" <|
             \typedArray ->
                 typedArray
                     |> JsTypedArray.reverse
@@ -520,12 +498,12 @@ reverse =
 sort : Test
 sort =
     describe "sort"
-        [ fuzz TestFuzz.jsUint8Array "Sorting keep array length" <|
+        [ fuzz TestFuzz.jsUint8Array "keep array length" <|
             \typedArray ->
                 JsTypedArray.sort typedArray
                     |> JsTypedArray.length
                     |> Expect.equal (JsTypedArray.length typedArray)
-        , fuzz TestFuzz.jsUint8Array "Sorting is idempotent" <|
+        , fuzz TestFuzz.jsUint8Array "is idempotent" <|
             \typedArray ->
                 JsTypedArray.sort (JsTypedArray.sort typedArray)
                     |> JsTypedArray.equal (JsTypedArray.sort typedArray)
@@ -547,48 +525,35 @@ reverseSort =
 foldl : Test
 foldl =
     describe "foldl"
-        [ fuzz TestFuzz.length "Length equals fold with (+1)" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.foldl (\_ v -> v + 1) 0
-                    |> Expect.equal length
-        , fuzz TestFuzz.length "Sum of zeros equals zero" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.foldl (+) 0
-                    |> Expect.equal 0
-        , fuzz TestFuzz.jsUint8Array "Cons foldl equals reverse" <|
+        [ fuzz TestFuzz.jsUint8Array "with (::) equals reverse" <|
             \typedArray ->
-                typedArray
-                    |> JsTypedArray.foldl (::) []
-                    |> JsUint8Array.fromList
-                    |> JsTypedArray.reverse
-                    |> JsTypedArray.equal typedArray
-                    |> Expect.true "Both arrays should be equal"
+                JsTypedArray.foldl (::) [] typedArray
+                    |> List.reverse
+                    |> Expect.equal (JsTypedArray.toList typedArray)
         ]
 
 
 indexedFoldl : Test
 indexedFoldl =
+    let
+        unzippedFolded typedArray =
+            typedArray
+                |> JsTypedArray.indexedFoldl concatPair []
+                |> List.unzip
+    in
     describe "indexedFoldl"
-        [ fuzz TestFuzz.length "Length equals fold with (+1)" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.indexedFoldl (\_ _ v -> v + 1) 0
-                    |> Expect.equal length
-        , fuzz TestFuzz.length "Sum of zeros equals zero" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.indexedFoldl (\_ v sum -> sum + v) 0
-                    |> Expect.equal 0
-        , fuzz TestFuzz.jsUint8Array "Cons foldl equals reverse" <|
+        [ fuzz TestFuzz.jsUint8Array "unzipped first is reversed range" <|
             \typedArray ->
-                typedArray
-                    |> JsTypedArray.indexedFoldl (always (::)) []
-                    |> JsUint8Array.fromList
-                    |> JsTypedArray.reverse
-                    |> JsTypedArray.equal typedArray
-                    |> Expect.true "Both arrays should be equal"
+                unzippedFolded typedArray
+                    |> Tuple.first
+                    |> List.reverse
+                    |> Expect.equal (List.range 0 <| JsTypedArray.length typedArray - 1)
+        , fuzz TestFuzz.jsUint8Array "unzipped second is reversed array" <|
+            \typedArray ->
+                unzippedFolded typedArray
+                    |> Tuple.second
+                    |> List.reverse
+                    |> Expect.equal (JsTypedArray.toList typedArray)
         ]
 
 
@@ -609,14 +574,8 @@ indexedFoldr =
         [ fuzz TestFuzz.jsUint8Array "is equivalent to indexedFoldl on reverse" <|
             \typedArray ->
                 let
-                    length =
-                        JsTypedArray.length typedArray
-
-                    concatPair index value acc =
-                        ( index, value ) :: acc
-
-                    concatPairRight index value acc =
-                        ( length - 1 - index, value ) :: acc
+                    concatPairRight =
+                        concatPairReverse (JsTypedArray.length typedArray)
                 in
                 JsTypedArray.indexedFoldl concatPair [] (JsTypedArray.reverse typedArray)
                     |> Expect.equal (JsTypedArray.indexedFoldr concatPairRight [] typedArray)
@@ -661,9 +620,15 @@ foldl2 =
 indexedFoldl2 : Test
 indexedFoldl2 =
     describe "indexedFoldl2"
-        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Foldl2 on one array equals foldl" <|
+        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "on one array equals indexedFoldl" <|
             \typedArray1 typedArray2 ->
                 let
+                    fold2First =
+                        JsTypedArray.indexedFoldl2 (\id v1 _ acc -> ( id, v1 ) :: acc) [] typedArray1 typedArray2
+
+                    fold2Second =
+                        JsTypedArray.indexedFoldl2 (\id _ v2 acc -> ( id, v2 ) :: acc) [] typedArray1 typedArray2
+
                     length1 =
                         JsTypedArray.length typedArray1
 
@@ -676,17 +641,11 @@ indexedFoldl2 =
                     newArray2 =
                         JsTypedArray.extract 0 (min length1 length2) typedArray2
 
-                    fold2First =
-                        JsTypedArray.indexedFoldl2 (\_ v1 _ acc -> v1 + acc) 0 typedArray1 typedArray2
-
-                    fold2Second =
-                        JsTypedArray.indexedFoldl2 (\_ _ v2 acc -> v2 + acc) 0 typedArray1 typedArray2
-
                     foldFirst =
-                        JsTypedArray.indexedFoldl (always (+)) 0 newArray1
+                        JsTypedArray.indexedFoldl concatPair [] newArray1
 
                     foldSecond =
-                        JsTypedArray.indexedFoldl (always (+)) 0 newArray2
+                        JsTypedArray.indexedFoldl concatPair [] newArray2
                 in
                 ( foldFirst, foldSecond )
                     |> Expect.equal ( fold2First, fold2Second )
@@ -696,76 +655,40 @@ indexedFoldl2 =
 foldr2 : Test
 foldr2 =
     describe "foldr2"
-        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Foldr2 on one array equals foldr" <|
+        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "is equivalent to foldl2 on reversed arrays" <|
             \typedArray1 typedArray2 ->
                 let
-                    length1 =
-                        JsTypedArray.length typedArray1
+                    reversed1 =
+                        JsTypedArray.reverse typedArray1
 
-                    length2 =
-                        JsTypedArray.length typedArray2
-
-                    newLength =
-                        min length1 length2
-
-                    newArray1 =
-                        JsTypedArray.extract (length1 - newLength) length1 typedArray1
-
-                    newArray2 =
-                        JsTypedArray.extract (length2 - newLength) length2 typedArray2
-
-                    fold2First =
-                        JsTypedArray.foldr2 (\v1 _ acc -> v1 + acc) 0 typedArray1 typedArray2
-
-                    fold2Second =
-                        JsTypedArray.foldr2 (\_ v2 acc -> v2 + acc) 0 typedArray1 typedArray2
-
-                    foldFirst =
-                        JsTypedArray.foldr (+) 0 newArray1
-
-                    foldSecond =
-                        JsTypedArray.foldr (+) 0 newArray2
+                    reversed2 =
+                        JsTypedArray.reverse typedArray2
                 in
-                ( foldFirst, foldSecond )
-                    |> Expect.equal ( fold2First, fold2Second )
+                JsTypedArray.foldr2 concatPair [] typedArray1 typedArray2
+                    |> Expect.equal (JsTypedArray.foldl2 concatPair [] reversed1 reversed2)
         ]
 
 
 indexedFoldr2 : Test
 indexedFoldr2 =
     describe "indexedFoldr2"
-        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Foldr2 on one array equals foldr" <|
+        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "is equivalent to indexedFoldl2 on reversed arrays" <|
             \typedArray1 typedArray2 ->
                 let
-                    length1 =
-                        JsTypedArray.length typedArray1
+                    reversed1 =
+                        JsTypedArray.reverse typedArray1
 
-                    length2 =
-                        JsTypedArray.length typedArray2
+                    reversed2 =
+                        JsTypedArray.reverse typedArray2
 
                     newLength =
-                        min length1 length2
+                        min (JsTypedArray.length typedArray1) (JsTypedArray.length typedArray2)
 
-                    newArray1 =
-                        JsTypedArray.extract (length1 - newLength) length1 typedArray1
-
-                    newArray2 =
-                        JsTypedArray.extract (length2 - newLength) length2 typedArray2
-
-                    fold2First =
-                        JsTypedArray.indexedFoldr2 (\_ v1 _ acc -> v1 + acc) 0 typedArray1 typedArray2
-
-                    fold2Second =
-                        JsTypedArray.indexedFoldr2 (\_ _ v2 acc -> v2 + acc) 0 typedArray1 typedArray2
-
-                    foldFirst =
-                        JsTypedArray.indexedFoldr (always (+)) 0 newArray1
-
-                    foldSecond =
-                        JsTypedArray.indexedFoldr (always (+)) 0 newArray2
+                    concatReverse =
+                        concatTripletReverse newLength
                 in
-                ( foldFirst, foldSecond )
-                    |> Expect.equal ( fold2First, fold2Second )
+                JsTypedArray.indexedFoldr2 concatTriplet [] typedArray1 typedArray2
+                    |> Expect.equal (JsTypedArray.indexedFoldl2 concatReverse [] reversed1 reversed2)
         ]
 
 
@@ -774,10 +697,6 @@ foldlr =
     describe "foldlr"
         [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "is same as reverse second array" <|
             \typedArray1 typedArray2 ->
-                let
-                    concatPair x1 x2 acc =
-                        ( x1, x2 ) :: acc
-                in
                 JsTypedArray.foldl2 concatPair [] typedArray1 (JsTypedArray.reverse typedArray2)
                     |> Expect.equal (JsTypedArray.foldlr concatPair [] typedArray1 typedArray2)
         ]
@@ -786,17 +705,56 @@ foldlr =
 join : Test
 join =
     describe "join"
-        [ fuzz TestFuzz.jsUint8Array "Joining is equal to fold with string concatenation" <|
+        [ fuzz TestFuzz.jsUint8Array "is equivalent to String.join on list" <|
             \typedArray ->
-                let
-                    separator =
-                        ","
-
-                    stringList =
-                        typedArray
-                            |> JsTypedArray.toList
-                            |> List.map toString
-                in
-                JsTypedArray.join separator typedArray
-                    |> Expect.equal (String.join separator stringList)
+                JsTypedArray.toList typedArray
+                    |> List.map toString
+                    |> String.join ","
+                    |> Expect.equal (JsTypedArray.join "," typedArray)
         ]
+
+
+
+-- HELPERS ###########################################################
+
+
+arrayIndex : Int -> Int -> Int
+arrayIndex length idx =
+    if idx < 0 then
+        max 0 (length + idx)
+    else
+        idx
+
+
+concatPair : Int -> Int -> List ( Int, Int ) -> List ( Int, Int )
+concatPair x y acc =
+    ( x, y ) :: acc
+
+
+concatPairReverse : Int -> Int -> Int -> List ( Int, Int ) -> List ( Int, Int )
+concatPairReverse length index value acc =
+    ( length - 1 - index, value ) :: acc
+
+
+concatTriplet : Int -> Int -> Int -> List ( Int, Int, Int ) -> List ( Int, Int, Int )
+concatTriplet x y z acc =
+    ( x, y, z ) :: acc
+
+
+concatTripletReverse : Int -> Int -> Int -> Int -> List ( Int, Int, Int ) -> List ( Int, Int, Int )
+concatTripletReverse length index x y acc =
+    ( length - 1 - index, x, y ) :: acc
+
+
+splitFilterArrays : Int -> Int -> { bigger : JsTypedArray Uint8 Int, smaller : JsTypedArray Uint8 Int }
+splitFilterArrays length index =
+    let
+        rangeArray =
+            JsUint8Array.initialize length identity
+
+        biggerThanIndex n =
+            index < n
+    in
+    { bigger = JsTypedArray.filter biggerThanIndex rangeArray
+    , smaller = JsTypedArray.filter (not << biggerThanIndex) rangeArray
+    }
