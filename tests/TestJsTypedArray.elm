@@ -440,18 +440,14 @@ sort =
     describe "sort"
         [ fuzz TestFuzz.jsUint8Array "Sorting keep array length" <|
             \typedArray ->
-                JsTypedArray.reverse typedArray
+                JsTypedArray.sort typedArray
                     |> JsTypedArray.length
                     |> Expect.equal (JsTypedArray.length typedArray)
         , fuzz TestFuzz.jsUint8Array "Sorting is idempotent" <|
             \typedArray ->
-                let
-                    sortedArray =
-                        JsTypedArray.sort typedArray
-                in
-                JsTypedArray.sort sortedArray
-                    |> JsTypedArray.equal sortedArray
-                    |> Expect.true ""
+                JsTypedArray.sort (JsTypedArray.sort typedArray)
+                    |> JsTypedArray.equal (JsTypedArray.sort typedArray)
+                    |> Expect.true "Second sorting should not change array"
         ]
 
 
