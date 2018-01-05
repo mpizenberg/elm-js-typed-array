@@ -413,8 +413,8 @@ replaceWithConstant =
             JsUint8Array.zeros length
                 |> JsTypedArray.replaceWithConstant start end constant
                 |> JsTypedArray.extract start end
-                |> JsTypedArray.indexedAll (\_ value -> value == constant % 256)
-                |> Expect.true "Replaced value are correct"
+                |> JsTypedArray.all ((==) (constant % 256))
+                |> Expect.true "All extracted values should be equal to constant"
 
 
 reverse : Test
