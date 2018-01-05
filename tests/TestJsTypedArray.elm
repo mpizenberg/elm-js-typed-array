@@ -2,6 +2,7 @@ module TestJsTypedArray
     exposing
         ( all
         , any
+        , append
         , equal
         , extract
         , filter
@@ -465,6 +466,24 @@ extract =
                 JsTypedArray.extract correctStart correctEnd typedArray
                     |> JsTypedArray.equal (JsTypedArray.extract start end typedArray)
                     |> Expect.true "Both arrays should be equal"
+        ]
+
+
+append : Test
+append =
+    describe "append"
+        [ fuzz2 (Fuzz.list Fuzz.int) (Fuzz.list Fuzz.int) "two arrays from lists" <|
+            \list1 list2 ->
+                let
+                    typedArray1 =
+                        JsUint8Array.fromList list1
+
+                    typedArray2 =
+                        JsUint8Array.fromList list2
+                in
+                JsTypedArray.append typedArray1 typedArray2
+                    |> JsTypedArray.equal (JsUint8Array.fromList <| List.append list1 list2)
+                    |> Expect.true "should equal array from appended list"
         ]
 
 
