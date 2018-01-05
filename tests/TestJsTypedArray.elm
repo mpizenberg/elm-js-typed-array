@@ -453,13 +453,13 @@ sort =
 
 reverseSort : Test
 reverseSort =
-    fuzz TestFuzz.jsUint8Array "Reverse sort equals sort then reverse" <|
+    fuzz TestFuzz.jsUint8Array "reverseSort" <|
         \typedArray ->
             typedArray
                 |> JsTypedArray.sort
                 |> JsTypedArray.reverse
                 |> JsTypedArray.equal (JsTypedArray.reverseSort typedArray)
-                |> Expect.true ""
+                |> Expect.true "Sort then reverse should equal reverseSort"
 
 
 indexedFoldl : Test
