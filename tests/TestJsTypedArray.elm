@@ -27,6 +27,7 @@ module TestJsTypedArray
         , reverse
         , reverseSort
         , sort
+        , unsafeGetAt
         )
 
 import Expect exposing (Expectation)
@@ -263,6 +264,21 @@ indexedMap2 =
                 JsTypedArray.indexedMap2 (\_ _ second -> second) typedArray1 typedArray2
                     |> JsTypedArray.equal (JsTypedArray.extract 0 (min length1 length2) typedArray2)
                     |> Expect.true ""
+        ]
+
+
+unsafeGetAt : Test
+unsafeGetAt =
+    describe "unsafeGetAt"
+        [ fuzz2 TestFuzz.length Fuzz.int "Unsafely get value at random index" <|
+            \length index ->
+                if 0 <= index && index < length then
+                    JsUint8Array.initialize length identity
+                        |> JsTypedArray.unsafeGetAt index
+                        |> Expect.equal (index % 256)
+                else
+                    -- Will throw a JavaScript error if called here
+                    Expect.pass
         ]
 
 
