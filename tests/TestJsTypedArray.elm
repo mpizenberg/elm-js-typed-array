@@ -595,23 +595,11 @@ indexedFoldl =
 foldr : Test
 foldr =
     describe "foldr"
-        [ fuzz TestFuzz.length "Length equals fold with (+1)" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.foldr (\_ v -> v + 1) 0
-                    |> Expect.equal length
-        , fuzz TestFuzz.length "Sum of zeros equals zero" <|
-            \length ->
-                JsUint8Array.zeros length
-                    |> JsTypedArray.foldr (+) 0
-                    |> Expect.equal 0
-        , fuzz TestFuzz.jsUint8Array "Cons foldr equals identity" <|
+        [ fuzz TestFuzz.jsUint8Array "is equivalent to foldl on reverse" <|
             \typedArray ->
-                typedArray
-                    |> JsTypedArray.foldr (::) []
-                    |> JsUint8Array.fromList
-                    |> JsTypedArray.equal typedArray
-                    |> Expect.true "Both arrays should be equal"
+                JsTypedArray.reverse typedArray
+                    |> JsTypedArray.foldl (::) []
+                    |> Expect.equal (JsTypedArray.foldr (::) [] typedArray)
         ]
 
 
