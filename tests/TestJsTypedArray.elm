@@ -380,8 +380,7 @@ extract =
             \a b c ->
                 case List.sort [ a, b, c ] of
                     l1 :: l2 :: l3 :: [] ->
-                        JsUint8Array.zeros l3
-                            |> JsTypedArray.indexedMap (\id _ -> id)
+                        JsUint8Array.initialize l3 identity
                             |> JsTypedArray.extract l1 l2
                             |> JsTypedArray.indexedAll (\id value -> value == (id + l1) % 256)
                             |> Expect.true "Values correspond to index extracted"
@@ -401,9 +400,9 @@ extract =
                     correctEnd =
                         arrayIndex length end
                 in
-                JsTypedArray.extract start end typedArray
-                    |> JsTypedArray.equal (JsTypedArray.extract correctStart correctEnd typedArray)
-                    |> Expect.true ""
+                JsTypedArray.extract correctStart correctEnd typedArray
+                    |> JsTypedArray.equal (JsTypedArray.extract start end typedArray)
+                    |> Expect.true "Both arrays should be equal"
         ]
 
 
