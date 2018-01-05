@@ -3,6 +3,7 @@ module TestJsTypedArray
         ( all
         , any
         , append
+        , buffer
         , equal
         , extract
         , filter
@@ -36,6 +37,8 @@ module TestJsTypedArray
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
+import JsArrayBuffer
+import JsFloat64Array
 import JsTypedArray exposing (JsTypedArray, Uint8)
 import JsUint8Array
 import String
@@ -80,6 +83,24 @@ length =
                     |> JsUint8Array.fromList
                     |> JsTypedArray.length
                     |> Expect.equal length
+        ]
+
+
+buffer : Test
+buffer =
+    describe "buffer"
+        [ fuzz TestFuzz.length "of an Uint8Array has same length" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.buffer
+                    |> JsArrayBuffer.length
+                    |> Expect.equal length
+        , fuzz TestFuzz.length "of a Float64Array has length x 8" <|
+            \length ->
+                JsFloat64Array.zeros length
+                    |> JsTypedArray.buffer
+                    |> JsArrayBuffer.length
+                    |> Expect.equal (8 * length)
         ]
 
 
