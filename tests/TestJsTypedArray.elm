@@ -626,7 +626,7 @@ indexedFoldr =
 foldl2 : Test
 foldl2 =
     describe "foldl2"
-        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "Foldl2 on one array equals foldl" <|
+        [ fuzz2 TestFuzz.jsUint8Array TestFuzz.jsUint8Array "on one array equals foldl" <|
             \typedArray1 typedArray2 ->
                 let
                     length1 =
@@ -642,16 +642,16 @@ foldl2 =
                         JsTypedArray.extract 0 (min length1 length2) typedArray2
 
                     fold2First =
-                        JsTypedArray.foldl2 (\v1 _ acc -> v1 + acc) 0 typedArray1 typedArray2
+                        JsTypedArray.foldl2 (\v1 _ acc -> v1 :: acc) [] typedArray1 typedArray2
 
                     fold2Second =
-                        JsTypedArray.foldl2 (\_ v2 acc -> v2 + acc) 0 typedArray1 typedArray2
+                        JsTypedArray.foldl2 (\_ v2 acc -> v2 :: acc) [] typedArray1 typedArray2
 
                     foldFirst =
-                        JsTypedArray.foldl (+) 0 newArray1
+                        JsTypedArray.foldl (::) [] newArray1
 
                     foldSecond =
-                        JsTypedArray.foldl (+) 0 newArray2
+                        JsTypedArray.foldl (::) [] newArray2
                 in
                 ( foldFirst, foldSecond )
                     |> Expect.equal ( fold2First, fold2Second )
