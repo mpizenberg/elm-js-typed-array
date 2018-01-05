@@ -4,6 +4,7 @@ module TestJsTypedArray
         , any
         , append
         , buffer
+        , bufferOffset
         , equal
         , extract
         , filter
@@ -101,6 +102,31 @@ buffer =
                     |> JsTypedArray.buffer
                     |> JsArrayBuffer.length
                     |> Expect.equal (8 * length)
+        ]
+
+
+bufferOffset : Test
+bufferOffset =
+    describe "bufferOffset"
+        [ fuzz TestFuzz.length "of fromBuffer is coherent" <|
+            \offset ->
+                JsArrayBuffer.zeros (offset + 1)
+                    |> JsUint8Array.fromBuffer offset 1
+                    |> Result.map JsTypedArray.bufferOffset
+                    |> Expect.equal (Ok offset)
+        , fuzz TestFuzz.length "of extracted is coherent" <|
+            \offset ->
+                JsUint8Array.zeros (offset + 1)
+                    |> JsTypedArray.extract offset (offset + 1)
+                    |> JsTypedArray.bufferOffset
+                    |> Expect.equal offset
+        , fuzz2 TestFuzz.length TestFuzz.length "of extracted twice is coherent" <|
+            \offset1 offset2 ->
+                JsUint8Array.zeros (offset1 + offset2 + 1)
+                    |> JsTypedArray.extract offset1 (offset1 + offset2 + 1)
+                    |> JsTypedArray.extract offset2 (offset2 + 1)
+                    |> JsTypedArray.bufferOffset
+                    |> Expect.equal (offset1 + offset2)
         ]
 
 
