@@ -6,6 +6,7 @@ module TestJsTypedArray
         , filter
         , findIndex
         , foldl
+        , foldr
         , getAt
         , indexedAll
         , indexedAny
@@ -511,6 +512,29 @@ indexedFoldl =
         ]
 
 
+foldr : Test
+foldr =
+    describe "foldr"
+        [ fuzz TestFuzz.length "Length equals fold with (+1)" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.foldr (\_ v -> v + 1) 0
+                    |> Expect.equal length
+        , fuzz TestFuzz.length "Sum of zeros equals zero" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.foldr (+) 0
+                    |> Expect.equal 0
+        , fuzz TestFuzz.jsUint8Array "Cons foldr equals identity" <|
+            \typedArray ->
+                typedArray
+                    |> JsTypedArray.foldr (::) []
+                    |> JsUint8Array.fromList
+                    |> JsTypedArray.equal typedArray
+                    |> Expect.true "Both arrays should be equal"
+        ]
+
+
 indexedFoldr : Test
 indexedFoldr =
     describe "indexedFoldr"
@@ -530,7 +554,7 @@ indexedFoldr =
                     |> JsTypedArray.indexedFoldr (always (::)) []
                     |> JsUint8Array.fromList
                     |> JsTypedArray.equal typedArray
-                    |> Expect.true ""
+                    |> Expect.true "Both arrays should be equal"
         ]
 
 
