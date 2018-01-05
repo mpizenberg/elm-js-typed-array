@@ -5,6 +5,7 @@ module TestJsTypedArray
         , extract
         , filter
         , findIndex
+        , foldl
         , getAt
         , indexedAll
         , indexedAny
@@ -462,6 +463,30 @@ reverseSort =
                 |> Expect.true "Sort then reverse should equal reverseSort"
 
 
+foldl : Test
+foldl =
+    describe "foldl"
+        [ fuzz TestFuzz.length "Length equals fold with (+1)" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.foldl (\_ v -> v + 1) 0
+                    |> Expect.equal length
+        , fuzz TestFuzz.length "Sum of zeros equals zero" <|
+            \length ->
+                JsUint8Array.zeros length
+                    |> JsTypedArray.foldl (+) 0
+                    |> Expect.equal 0
+        , fuzz TestFuzz.jsUint8Array "Cons foldl equals reverse" <|
+            \typedArray ->
+                typedArray
+                    |> JsTypedArray.foldl (::) []
+                    |> JsUint8Array.fromList
+                    |> JsTypedArray.reverse
+                    |> JsTypedArray.equal typedArray
+                    |> Expect.true "Both arrays should be equal"
+        ]
+
+
 indexedFoldl : Test
 indexedFoldl =
     describe "indexedFoldl"
@@ -482,7 +507,7 @@ indexedFoldl =
                     |> JsUint8Array.fromList
                     |> JsTypedArray.reverse
                     |> JsTypedArray.equal typedArray
-                    |> Expect.true ""
+                    |> Expect.true "Both arrays should be equal"
         ]
 
 
