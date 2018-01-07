@@ -6,6 +6,15 @@
 
 This library aims at providing the
 [JavaScript `TypedArray` API][typed-array] in elm.
+My reasons are two-fold:
+
+1. Grow the cover of Web API in elm.
+Typed arrays are use for ArrayBuffers, Blobs, Files, network exchange,
+canvas data etc. So having them in elm is important in my opinion.
+2. They are the only fixed-size, typed structures in JS. Due to this,
+I'm convinced they can be used as a solid ground for fixed size
+efficient mathematical (Linear Algebra) library.
+
 
 [badge-license]: https://img.shields.io/badge/license-MPL--2.0-blue.svg?style=flat-square
 [license]: https://www.mozilla.org/en-US/MPL/2.0/
