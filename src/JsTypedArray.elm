@@ -71,7 +71,7 @@ In this module are provided the `toList` and `toArray` polymorphic functions.
 
 @docs toList, toArray
 
-Encoders and decoders are providing instant data exchange through ports.
+Encoders and decoders are providing 0-cost data exchange through ports.
 The typed arrays are not "converted" since they already are JavaScript values.
 A `decode` function is available in each dedicated modules,
 and the polymorphic `encode` function is in this module.
@@ -173,6 +173,8 @@ type Float64
 
 {-| Convert a typed array to a list.
 
+Complexity: O(length).
+
     JsUint8Array.fromList [ 0, 14, 42 ]
         |> JsTypedArray.toList
     --> [ 0, 14, 42 ]
@@ -184,6 +186,8 @@ toList =
 
 
 {-| Convert a typed array to an array.
+
+Complexity: O(length).
 
     JsUint8Array.fromList [ 0, 14, 42 ]
         |> JsTypedArray.toArray
@@ -201,6 +205,9 @@ toArray typedArray =
 
 {-| Encode a `JsTypedArray` into a JavaScript `Value`
 that can be sent through ports.
+
+Complexity: O(1).
+
 -}
 encode : JsTypedArray a b -> Encode.Value
 encode =
@@ -212,7 +219,6 @@ encode =
 
 
 {-| Get the number of elements in the array.
-Internally uses `TypedArray.prototype.length`.
 Beware that this length (in number of elements)
 is different from its buffer length (in bytes).
 
@@ -251,19 +257,19 @@ getAt index array =
 
 
 {-| Same as `getAt` but unsafe.
-Return JS undefined if index is outside of bounds.
 Only useful if performance is required.
+
+_WARNING: will throw if index is outside of bounds._
 
 Complexity: O(1).
 
 -}
 unsafeGetAt : Int -> JsTypedArray a b -> b
-unsafeGetAt index array =
-    Native.JsTypedArray.getAt index array
+unsafeGetAt =
+    Native.JsTypedArray.getAt
 
 
 {-| Get the underlying data buffer of the array.
-Internally uses `TypedArray.prototype.buffer`.
 
 Complexity: O(1).
 
@@ -284,7 +290,6 @@ buffer =
 
 
 {-| Get the offset (in bytes) from the start of its corresponding buffer.
-Internally uses `TypedArray.prototype.byteOffset`.
 
 Complexity: O(1).
 
@@ -420,15 +425,17 @@ indexedFilter =
 -- COMPARISON ########################################################
 
 
-{-| Check if two typed arrays are equal.
+{-| Check if two typed arrays of the same type are equal.
+
 _WARNING: using the `(==)` operator yields wrong results._
+
 For example:
 
     JsUint8Array.fromList [] == JsUint8Array.fromList [42]
     --> True
 
 For this reason, we need to introduce a specific function
-to check that two typed arrays are equal.
+to check if two typed arrays are equal.
 
     typedArray1 =
         JsUint8Array.fromList [0, 14, 42]
@@ -459,8 +466,7 @@ equal =
 
 {-| Extract a segment of the array between given start (included)
 and end (excluded) indices.
-Internally uses `TypedArray.prototype.subarray`
-which reuses the same buffer, changing offset and length attributes.
+It reuses the same buffer, changing offset and length attributes.
 Thus this is extremely fast since it doesn't copy the data buffer.
 
 In case of negative indices, count backward from end of array.
@@ -623,7 +629,6 @@ reverse =
 
 
 {-| Sort the array.
-Internally uses `TypedArray.prototype.sort`.
 
 Complexity: depends on browser implementation.
 
@@ -634,7 +639,6 @@ sort =
 
 
 {-| Sort the array in reverse order.
-Internally uses `TypedArray.prototype.sort`.
 
 Complexity: depends on browser implementation.
 
@@ -827,12 +831,23 @@ indexedFoldr2 f initialValue typedArray1 typedArray2 =
     Native.JsTypedArray.indexedFoldr2 f initialValue newArray1 newArray2
 
 
-{-| Reduce two arrays, first from left, second from right
+{-| Reduce two arrays, first from left, second from right.
 The longer array is troncated at the size of the smaller one.
 
 Complexity: O(length).
 
-TODO: example
+    zipInward : JsTypedArray a b -> JsTypedArray a b -> List (b,b)
+    zipInward =
+        JsTypedArray.foldlr (\x y list -> (x,y) :: list) []
+
+    typedArray1 =
+        JsUint8Array.fromList [0, 1, 2]
+
+    typedArray2 =
+        JsUint8Array.fromList [0, 1, 2, 3]
+
+    zipInward typedArray1 typedArray2
+    --> [ (2,1), (1,2), (0,3) ]
 
 -}
 foldlr : (b -> b -> c -> c) -> c -> JsTypedArray a b -> JsTypedArray a b -> c
