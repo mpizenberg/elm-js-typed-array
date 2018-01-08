@@ -167,7 +167,7 @@ decode =
     let
         maybeToDecoder =
             Maybe.map Decode.succeed
-                >> Maybe.withDefault (Decode.fail "Value is not a Float64Array")
+                >> Maybe.withDefault (Decode.fail "Value is not a Uint8Array")
     in
     Decode.value
         |> Decode.map fromValue
