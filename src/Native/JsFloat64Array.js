@@ -45,9 +45,10 @@ var _mpizenberg$elm_js_typed_array$Native_JsFloat64Array = (function() {
 
   function fromValue(value) {
     if (!(value instanceof Float64Array)) {
-      throw "This is not a Float64Array";
+      return _elm_lang$core$Maybe$Nothing;
+    } else {
+      return _elm_lang$core$Maybe$Just(value);
     }
-    return value;
   }
 
   return {

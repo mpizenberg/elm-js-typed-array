@@ -161,16 +161,19 @@ fromTypedArray =
 
 
 {-| `JsTypedArray Uint8 Int` decoder.
-
-_WARNING: throws an error if the value you are trying to decode
-is not of type `Uint8Array`._
-
 -}
 decode : Decoder (JsTypedArray Uint8 Int)
 decode =
-    Decode.map fromValue Decode.value
+    let
+        maybeToDecoder =
+            Maybe.map Decode.succeed
+                >> Maybe.withDefault (Decode.fail "Value is not a Float64Array")
+    in
+    Decode.value
+        |> Decode.map fromValue
+        |> Decode.andThen maybeToDecoder
 
 
-fromValue : Decode.Value -> JsTypedArray Uint8 Int
+fromValue : Decode.Value -> Maybe (JsTypedArray Uint8 Int)
 fromValue =
     Native.JsUint8Array.fromValue

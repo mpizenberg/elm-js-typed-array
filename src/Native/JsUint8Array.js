@@ -45,9 +45,10 @@ var _mpizenberg$elm_js_typed_array$Native_JsUint8Array = (function() {
 
   function fromValue(value) {
     if (!(value instanceof Uint8Array)) {
-      throw "This is not an Uint8Array";
+      return _elm_lang$core$Maybe$Nothing;
+    } else {
+      return _elm_lang$core$Maybe$Just(value);
     }
-    return value;
   }
 
   return {

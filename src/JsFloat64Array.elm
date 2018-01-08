@@ -163,16 +163,19 @@ fromTypedArray =
 
 
 {-| `JsTypedArray Float64 Float` decoder.
-
-_WARNING: throws an error if the value you are trying to decode
-is not of type `Float64Array`._
-
 -}
 decode : Decoder (JsTypedArray Float64 Float)
 decode =
-    Decode.map fromValue Decode.value
+    let
+        maybeToDecoder =
+            Maybe.map Decode.succeed
+                >> Maybe.withDefault (Decode.fail "Value is not a Float64Array")
+    in
+    Decode.value
+        |> Decode.map fromValue
+        |> Decode.andThen maybeToDecoder
 
 
-fromValue : Decode.Value -> JsTypedArray Float64 Float
+fromValue : Decode.Value -> Maybe (JsTypedArray Float64 Float)
 fromValue =
     Native.JsFloat64Array.fromValue
