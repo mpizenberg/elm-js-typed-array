@@ -34,6 +34,17 @@ var _mpizenberg$elm_js_typed_array$Native_JsUint8Array = (function() {
     return typedArray;
   }
 
+  function unsafeIndexedFromList(length, f, list) {
+    var i = 0;
+    var typedArray = new Uint8Array(length);
+    while (i < length) {
+      typedArray[i] = A2(f, i, list._0);
+      list = list._1;
+      i++;
+    }
+    return typedArray;
+  }
+
   function fromTypedArray(typedArray) {
     var length = typedArray.length;
     var newTypedArray = new Uint8Array(length);
@@ -57,6 +68,7 @@ var _mpizenberg$elm_js_typed_array$Native_JsUint8Array = (function() {
     initialize: F2(initialize),
     fromBuffer: F3(fromBuffer),
     fromList: F2(fromList),
+    unsafeIndexedFromList: F3(unsafeIndexedFromList),
     fromTypedArray: fromTypedArray,
     fromValue: fromValue
   };

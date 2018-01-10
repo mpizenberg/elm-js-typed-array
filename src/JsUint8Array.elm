@@ -7,6 +7,7 @@ module JsUint8Array
         , fromTypedArray
         , initialize
         , repeat
+        , unsafeIndexedFromList
         , zeros
         )
 
@@ -18,6 +19,8 @@ that can then be manipulated with the `JsTypedArray` module.
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
 @docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, decode
+
+@docs unsafeIndexedFromList
 
 -}
 
@@ -143,6 +146,22 @@ Complexity: O(length).
 fromList : List Int -> JsTypedArray Uint8 Int
 fromList list =
     Native.JsUint8Array.fromList (List.length list) list
+
+
+{-| Initialize from a list of elements (unsafe).
+The array length is provided as a parameter to
+avoid one walk through the list.
+Index of current element in the list can also be used.
+
+Complexity: O(length).
+
+    JsUint8Array.unsafeIndexedFromList 3 (+) [ 0, 14, 42 ]
+    --> { 0 = 0, 1 = 15, 2 = 44 }
+
+-}
+unsafeIndexedFromList : Int -> (Int -> a -> Int) -> List a -> JsTypedArray Uint8 Int
+unsafeIndexedFromList =
+    Native.JsUint8Array.unsafeIndexedFromList
 
 
 {-| Convert from another typed array.

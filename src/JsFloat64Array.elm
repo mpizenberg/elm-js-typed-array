@@ -7,6 +7,7 @@ module JsFloat64Array
         , fromTypedArray
         , initialize
         , repeat
+        , unsafeIndexedFromList
         , zeros
         )
 
@@ -18,6 +19,8 @@ that can then be manipulated with the `JsTypedArray` module.
 [Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
 @docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, decode
+
+@docs unsafeIndexedFromList
 
 -}
 
@@ -146,6 +149,28 @@ Complexity: O(length).
 fromList : List Float -> JsTypedArray Float64 Float
 fromList list =
     Native.JsFloat64Array.fromList (List.length list) list
+
+
+{-| Initialize from a list of elements (unsafe).
+The array length is provided as a parameter to
+avoid one walk through the list.
+Index of current element in the list can also be used.
+
+Complexity: O(length).
+
+    indexPlusInt index int =
+        toFloat (index + int)
+
+    intList =
+        [ 0, 14, 42 ]
+
+    JsFloat64Array.unsafeIndexedFromList 3 indexPlusInt intList
+    --> { 0 = 0, 1 = 15, 2 = 44 }
+
+-}
+unsafeIndexedFromList : Int -> (Int -> a -> Float) -> List a -> JsTypedArray Float64 Float
+unsafeIndexedFromList =
+    Native.JsFloat64Array.unsafeIndexedFromList
 
 
 {-| Convert from another typed array.

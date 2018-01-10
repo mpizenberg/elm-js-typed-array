@@ -7,6 +7,7 @@ module TestJsUint8Array
         , fromTypedArray
         , initialize
         , repeat
+        , unsafeIndexedFromList
         , zeros
         )
 
@@ -105,6 +106,25 @@ fromList =
             JsUint8Array.fromList list
                 |> JsTypedArray.toList
                 |> Expect.equal list
+
+
+unsafeIndexedFromList : Test
+unsafeIndexedFromList =
+    describe "unsafeIndexedFromList"
+        [ fuzz (Fuzz.list Fuzz.int) "is coherent with fromList" <|
+            \list ->
+                let
+                    length =
+                        List.length list
+
+                    incrementedFromList =
+                        List.indexedMap (+) list
+                            |> JsUint8Array.fromList
+                in
+                JsUint8Array.unsafeIndexedFromList length (+) list
+                    |> JsTypedArray.equal incrementedFromList
+                    |> Expect.true "should be equal"
+        ]
 
 
 fromArray : Test

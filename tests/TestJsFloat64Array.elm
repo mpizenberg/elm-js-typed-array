@@ -7,6 +7,7 @@ module TestJsFloat64Array
         , fromTypedArray
         , initialize
         , repeat
+        , unsafeIndexedFromList
         , zeros
         )
 
@@ -137,6 +138,25 @@ fromList =
             JsFloat64Array.fromList list
                 |> JsTypedArray.toList
                 |> Expect.equal list
+
+
+unsafeIndexedFromList : Test
+unsafeIndexedFromList =
+    describe "unsafeIndexedFromList"
+        [ fuzz (Fuzz.list Fuzz.float) "is coherent with fromList" <|
+            \list ->
+                let
+                    length =
+                        List.length list
+
+                    incrementedFromList =
+                        List.indexedMap (\id float -> toFloat id + float) list
+                            |> JsFloat64Array.fromList
+                in
+                JsFloat64Array.unsafeIndexedFromList length (\id float -> toFloat id + float) list
+                    |> JsTypedArray.equal incrementedFromList
+                    |> Expect.true "should be equal"
+        ]
 
 
 fromArray : Test
