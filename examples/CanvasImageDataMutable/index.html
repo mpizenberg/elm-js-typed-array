@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mutable Canvas Image Data</title>
+	<meta charset="UTF-8">
+	<script src="Main.js"></script>
+</head>
+<body>
+	<script charset="utf-8">
+		var width = 480;
+		var height = 320;
+		var canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		var ctx = canvas.getContext("2d");
+		document.body.appendChild(canvas);
+		var imageData = ctx.createImageData(width, height);
+		var mutableData = new Uint8Array(imageData.data.buffer);
+	</script>
+	<script charset="utf-8">
+		var app = Elm.Main.worker({ canvasData: mutableData });
+		app.ports.setCanvasData.subscribe(function() {
+			ctx.putImageData(imageData, 0, 0);
+		});
+	</script>
+</body>
+</html>
+

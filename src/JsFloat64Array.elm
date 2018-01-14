@@ -5,6 +5,7 @@ module JsFloat64Array
         , fromBuffer
         , fromList
         , fromTypedArray
+        , fromValue
         , initialize
         , repeat
         , unsafeIndexedFromList
@@ -18,7 +19,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Float64Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array
 
-@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, decode
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, fromValue, decode
 
 @docs unsafeIndexedFromList
 
@@ -201,6 +202,9 @@ decode =
         |> Decode.andThen maybeToDecoder
 
 
+{-| Transform a compatible JavaScript value into a typed array.
+Returns Nothing in value is not a Float64Array.
+-}
 fromValue : Decode.Value -> Maybe (JsTypedArray Float64 Float)
 fromValue =
     Native.JsFloat64Array.fromValue

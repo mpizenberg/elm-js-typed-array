@@ -5,6 +5,7 @@ module JsUint8Array
         , fromBuffer
         , fromList
         , fromTypedArray
+        , fromValue
         , initialize
         , repeat
         , unsafeIndexedFromList
@@ -18,7 +19,7 @@ that can then be manipulated with the `JsTypedArray` module.
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, decode
+@docs zeros, repeat, initialize, fromBuffer, fromArray, fromList, fromTypedArray, fromValue, decode
 
 @docs unsafeIndexedFromList
 
@@ -193,6 +194,9 @@ decode =
         |> Decode.andThen maybeToDecoder
 
 
+{-| Transform a compatible JavaScript value into a typed array.
+Returns Nothing in value is not a Uint8Array.
+-}
 fromValue : Decode.Value -> Maybe (JsTypedArray Uint8 Int)
 fromValue =
     Native.JsUint8Array.fromValue
