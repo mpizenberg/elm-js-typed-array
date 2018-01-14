@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Canvas Image Data</title>
+	<meta charset="UTF-8">
+	<script src="Main.js"></script>
+</head>
+<body>
+	<script charset="utf-8">
+		var width = 480;
+		var height = 320;
+		var canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		var ctx = canvas.getContext("2d");
+		document.body.appendChild(canvas);
+	</script>
+	<script charset="utf-8">
+		var app = Elm.Main.worker({ canvasSize: [width, height] });
+		app.ports.setCanvasData.subscribe(function(typedArray) {
+			var data = new Uint8ClampedArray(typedArray.buffer);
+			var imageData = new ImageData(data, width, height);
+			ctx.putImageData(imageData, 0, 0);
+		});
+	</script>
+</body>
+</html>
+

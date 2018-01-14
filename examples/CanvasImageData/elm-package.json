@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "summary": "JavaScript TypedArray API in elm",
+    "repository": "https://github.com/mpizenberg/elm-js-typed-array.git",
+    "license": "MPL-2.0",
+    "source-directories": [
+        "../../src",
+        "."
+    ],
+    "exposed-modules": [],
+    "native-modules": true,
+    "dependencies": {
+        "2mol/elm-colormaps": "1.0.2 <= v < 2.0.0",
+        "elm-lang/animation-frame": "1.0.1 <= v < 2.0.0",
+        "elm-lang/core": "5.1.1 <= v < 6.0.0"
+    },
+    "elm-version": "0.18.0 <= v < 0.19.0"
+}
