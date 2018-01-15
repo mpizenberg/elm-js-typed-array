@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>WebGL</title>
+		<meta charset="UTF-8">
+		<script src="Main.js"></script>
+		<script src="webgl.js"></script>
+	</head>
+	<body>
+
+<script charset="utf-8">
+	var width = 480;
+	var height = 320;
+	var canvas = document.createElement('canvas');
+	canvas.width = width;
+	canvas.height = height;
+	var gl = canvas.getContext("webgl");
+	document.body.appendChild(canvas);
+	var webgl = webglHelper();
+
+	// Global variables for the WebGL program
+	var programInfo = null;
+	var buffers = null;
+	var vertexCount = 0;
+</script>
+
+<script charset="utf-8">
+var app = Elm.Main.worker({ canvasSize: [width, height] });
+
+app.ports.initWebGl.subscribe(function(initialValues) {
+	programInfo = webgl.initWebGlProgram(
+		gl,
+		initialValues.vertexShaderSource,
+		initialValues.fragmentShaderSource
+	);
+	buffers = webgl.initBuffers(
+		gl,
+		initialValues.positions,
+		initialValues.colors
+	);
+	vertexCount = initialValues.vertexCount;
+});
+
+app.ports.drawScene.subscribe(function(camera) {
+	drawScene(gl, buffers, programInfo, camera, vertexCount);
+});
+
+function drawScene(gl, buffers, programInfo, camera, vertexCount) {
+	// Clear canvas
+	webgl.clearCanvas(gl);
+
+	// Bind positions buffer to position vertex attribute
+	webgl.bindBufferToAttribute(
+		gl,
+		buffers.position,
+		programInfo.attribLocations.vertexPosition,
+		2
+	);
+
+	// Bind color buffer to color vertex attribute
+	webgl.bindBufferToAttribute(
+		gl,
+		buffers.color,
+		programInfo.attribLocations.vertexColor,
+		4
+	);
+
+	// Tell WebGL to use our program when drawing
+	gl.useProgram(programInfo.program);
+
+	// Set the camera shader uniforms
+	gl.uniformMatrix4fv(
+		programInfo.uniformLocations.projectionMatrix,
+		false,
+		camera.projection
+	);
+	gl.uniformMatrix4fv(
+		programInfo.uniformLocations.motionMatrix,
+		false,
+		camera.motion
+	);
+
+	// Actual drawing of the square
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCount);
+}
+</script>
+
+	</body>
+</html>
