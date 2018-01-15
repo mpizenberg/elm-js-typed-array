@@ -1,6 +1,7 @@
 module JsTypedArray
     exposing
-        ( Float64
+        ( Float32
+        , Float64
         , JsTypedArray
         , Uint8
         , all
@@ -48,7 +49,7 @@ module JsTypedArray
 
 The list of all JavaScript typed arrays representable is as below:
 
-@docs Uint8, Float64
+@docs Uint8, Float64, Float32
 
 
 # Typed Array Creation
@@ -159,6 +160,12 @@ type JsTypedArray a b
 -}
 type Uint8
     = Uint8
+
+
+{-| 32-bits floating point number.
+-}
+type Float32
+    = Float32
 
 
 {-| 64-bits floating point number.

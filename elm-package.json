@@ -11,6 +11,7 @@
         "JsArrayBuffer",
         "JsTypedArray",
         "JsFloat64Array",
+        "JsFloat32Array",
         "JsUint8Array"
     ],
     "native-modules": true,

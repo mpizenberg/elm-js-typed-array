@@ -1,6 +1,7 @@
 module TestFuzz
     exposing
         ( jsArrayBuffer
+        , jsFloat32Array
         , jsFloat64Array
         , jsUint8Array
         , length
@@ -8,8 +9,9 @@ module TestFuzz
 
 import Fuzz exposing (Fuzzer)
 import JsArrayBuffer exposing (JsArrayBuffer)
+import JsFloat32Array
 import JsFloat64Array
-import JsTypedArray exposing (Float64, JsTypedArray, Uint8)
+import JsTypedArray exposing (Float32, Float64, JsTypedArray, Uint8)
 import JsUint8Array
 import Random
 
@@ -37,6 +39,11 @@ jsUint8Array =
 jsFloat64Array : Fuzzer (JsTypedArray Float64 Float)
 jsFloat64Array =
     randomJsTypedArray JsFloat64Array.fromList (Random.float -(10 ^ 10) (10 ^ 10))
+
+
+jsFloat32Array : Fuzzer (JsTypedArray Float32 Float)
+jsFloat32Array =
+    randomJsTypedArray JsFloat32Array.fromList (Random.float -(10 ^ 10) (10 ^ 10))
 
 
 
