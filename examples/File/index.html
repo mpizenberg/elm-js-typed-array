@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>File</title>
+	<meta charset="UTF-8">
+	<script src="Main.js"></script>
+</head>
+<body>
+	<script charset="utf-8">
+		var app = Elm.Main.fullscreen();
+		app.ports.loadArrayBuffer.subscribe( (file) => {
+			const reader = new FileReader()
+			reader.onload = () => app.ports.arrayBufferLoaded.send(reader.result)
+			reader.readAsArrayBuffer(file)
+		})
+	</script>
+</body>
+</html>
