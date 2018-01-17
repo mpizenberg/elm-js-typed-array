@@ -1,30 +1,23 @@
 module TestJsArrayBuffer
     exposing
-        ( slice
+        ( encodeDecodeRoundTrip
+        , slice
         , zeros
         )
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
 import JsArrayBuffer exposing (JsArrayBuffer)
+import Json.Decode as Decode
 import List
 import Random
 import Test exposing (..)
+import TestFuzz
 
 
 negativeInt : Fuzzer Int
 negativeInt =
     Fuzz.intRange Random.minInt -1
-
-
-maxArrayBufferLengthTested : Int
-maxArrayBufferLengthTested =
-    16000000
-
-
-lengthInt : Fuzzer Int
-lengthInt =
-    Fuzz.intRange 0 maxArrayBufferLengthTested
 
 
 zeros : Test
@@ -35,7 +28,7 @@ zeros =
                 JsArrayBuffer.zeros length
                     |> JsArrayBuffer.length
                     |> Expect.equal 0
-        , fuzz lengthInt "Initialize an array buffer with correct length" <|
+        , fuzz TestFuzz.length "Initialize an array buffer with correct length" <|
             \length ->
                 JsArrayBuffer.zeros length
                     |> JsArrayBuffer.length
@@ -46,7 +39,7 @@ zeros =
 arrayIndex : Int -> Int -> Int
 arrayIndex length idx =
     if idx < 0 then
-        max 0 (length - idx)
+        max 0 (length + idx)
     else
         idx
 
@@ -59,7 +52,7 @@ ordered list =
 slice : Test
 slice =
     describe "Slicing"
-        [ fuzz3 lengthInt lengthInt lengthInt "Slice with positive indices" <|
+        [ fuzz3 TestFuzz.length TestFuzz.length TestFuzz.length "Slice with positive indices" <|
             \length start end ->
                 let
                     arrayBuffer =
@@ -83,7 +76,7 @@ slice =
                     slicedArrayBuffer
                         |> JsArrayBuffer.length
                         |> Expect.equal 0
-        , fuzz3 lengthInt Fuzz.int Fuzz.int "Slice with any indices" <|
+        , fuzz3 TestFuzz.length Fuzz.int Fuzz.int "Slice with any indices" <|
             \length start end ->
                 let
                     arrayBuffer =
@@ -96,5 +89,18 @@ slice =
                         JsArrayBuffer.slice (arrayIndex length start) (arrayIndex length end) arrayBuffer
                 in
                 slicedArrayBuffer
-                    |> Expect.equal slicedPositiveIndices
+                    |> JsArrayBuffer.equal slicedPositiveIndices
+                    |> Expect.true "Should be equal"
         ]
+
+
+encodeDecodeRoundTrip : Test
+encodeDecodeRoundTrip =
+    fuzz TestFuzz.jsArrayBuffer "Encode-Decode round trip" <|
+        \arrayBuffer ->
+            arrayBuffer
+                |> JsArrayBuffer.encode
+                |> Decode.decodeValue JsArrayBuffer.decode
+                |> Result.withDefault (JsArrayBuffer.zeros 0)
+                |> JsArrayBuffer.equal arrayBuffer
+                |> Expect.true "Encode-Decode round trip"

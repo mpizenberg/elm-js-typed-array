@@ -1,6 +1,10 @@
 module JsArrayBuffer
     exposing
         ( JsArrayBuffer
+        , decode
+        , encode
+        , equal
+        , fromValue
         , length
         , slice
         , zeros
@@ -14,10 +18,12 @@ through views (like Uint8Array, Float64Array, etc.).
 
 [ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
 
-@docs JsArrayBuffer, zeros, length, slice
+@docs JsArrayBuffer, zeros, length, slice, fromValue, encode, decode, equal
 
 -}
 
+import Json.Decode as Decode exposing (Decoder)
+import Json.Encode as Encode
 import Native.JsArrayBuffer
 
 
@@ -59,3 +65,51 @@ In the case of an impossible slice, the empty array is returned.
 slice : Int -> Int -> JsArrayBuffer -> JsArrayBuffer
 slice =
     Native.JsArrayBuffer.slice
+
+
+{-| Transform a compatible JavaScript value into an array buffer.
+Returns Nothing in value is not an array buffer.
+-}
+fromValue : Decode.Value -> Maybe JsArrayBuffer
+fromValue =
+    Native.JsArrayBuffer.fromValue
+
+
+{-| Encode a `JsArrayBuffer` into a JavaScript `Value`
+that can be sent through ports.
+
+Complexity: O(1).
+
+-}
+encode : JsArrayBuffer -> Encode.Value
+encode =
+    Native.JsArrayBuffer.encode
+
+
+{-| `JsArrayBuffer` decoder.
+-}
+decode : Decoder JsArrayBuffer
+decode =
+    let
+        maybeToDecoder =
+            Maybe.map Decode.succeed
+                >> Maybe.withDefault (Decode.fail "Value is not an ArrayBuffer")
+    in
+    Decode.value
+        |> Decode.map fromValue
+        |> Decode.andThen maybeToDecoder
+
+
+{-| Check if two array buffers are equal.
+
+_WARNING: using the `(==)` operator yields wrong results._
+
+For example:
+
+    JsArrayBuffer.zeros 0 == JsArrayBuffer.zeros 1
+    --> True
+
+-}
+equal : JsArrayBuffer -> JsArrayBuffer -> Bool
+equal =
+    Native.JsArrayBuffer.equal
