@@ -1,6 +1,7 @@
 module TestFuzz
     exposing
         ( jsArrayBuffer
+        , jsDataView
         , jsFloat32Array
         , jsFloat64Array
         , jsUint8Array
@@ -9,6 +10,7 @@ module TestFuzz
 
 import Fuzz exposing (Fuzzer)
 import JsArrayBuffer exposing (JsArrayBuffer)
+import JsDataView exposing (JsDataView)
 import JsFloat32Array
 import JsFloat64Array
 import JsTypedArray exposing (Float32, Float64, JsTypedArray, Uint8)
@@ -29,6 +31,14 @@ length =
 jsArrayBuffer : Fuzzer JsArrayBuffer
 jsArrayBuffer =
     Fuzz.map JsArrayBuffer.zeros length
+
+
+jsDataView : Fuzzer JsDataView
+jsDataView =
+    jsUint8Array
+        |> Fuzz.map JsTypedArray.buffer
+        |> Fuzz.map (\buffer -> JsDataView.fromBuffer 0 (JsArrayBuffer.length buffer) buffer)
+        |> Fuzz.map (Result.withDefault JsDataView.empty)
 
 
 jsUint8Array : Fuzzer (JsTypedArray Uint8 Int)

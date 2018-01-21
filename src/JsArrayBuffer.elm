@@ -1,6 +1,7 @@
 module JsArrayBuffer
     exposing
         ( JsArrayBuffer
+        , RangeError(..)
         , decode
         , encode
         , equal
@@ -18,7 +19,7 @@ through views (like Uint8Array, Float64Array, etc.).
 
 [ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
 
-@docs JsArrayBuffer, zeros, length, slice, fromValue, encode, decode, equal
+@docs JsArrayBuffer, RangeError, zeros, length, slice, fromValue, encode, decode, equal
 
 -}
 
@@ -31,6 +32,22 @@ import Native.JsArrayBuffer
 -}
 type JsArrayBuffer
     = JsArrayBuffer
+
+
+{-| Errors that may occur while manipulating an array buffer.
+-}
+type RangeError
+    = NegativeOffset Int
+    | NegativeLength Int
+    | OffsetNotMultipleElementSize
+        { offset : Int
+        , elementSize : Int
+        }
+    | BufferOverflow
+        { bufferLength : Int
+        , offset : Int
+        , byteLength : Int
+        }
 
 
 {-| Return the length of the array buffer.
