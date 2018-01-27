@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>XMLHttpRequest</title>
+	<meta charset="UTF-8">
+	<script src="Main.js"></script>
+</head>
+<body>
+	<script charset="utf-8">
+		var app = Elm.Main.fullscreen();
+		app.ports.ask.subscribe( () => {
+			const request = new XMLHttpRequest()
+			request.onload = () => app.ports.theAnswer.send(request.response)
+			request.open("GET", "/answer.bin")
+			request.responseType = "arraybuffer"
+			request.send(null)
+		})
+	</script>
+</body>
+</html>
