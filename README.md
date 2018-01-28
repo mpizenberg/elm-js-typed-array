@@ -31,11 +31,17 @@ efficient mathematical (Linear Algebra) library.
    * from elm data structures: `fromList`, `fromArray`
    * to elm data structures: `toList`, `toArray`
  * be interoperable with JavaScript: 0-cost encoders / decoders
+ * be as **minimalist** as possible. It aims to follow the successful approach
+   of [Skinney/elm-array-exploration] which splits its array implementation in two parts.
+   First a minimal wrapper of JavaScript array in native code (`Native/JsArray.js`
+   and `Array/JsArray.elm`),
+   and second, a pure elm implementation on top of it (`Array/Hamt.elm`).
  * be **flexible** yet **efficient**:
    * most functions are benchmarked and optimized
    * most functions are also provided in an "indexed" form
    * some functions have an "unsafe" form to avoid overcost of functor type returned
 
+[Skinney/elm-array-exploration]: https://github.com/Skinney/elm-array-exploration
 
 ## Warnings
 
