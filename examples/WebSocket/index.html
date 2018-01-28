@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WebSocket</title>
+	<meta charset="UTF-8">
+	<script src="Main.js"></script>
+</head>
+<body>
+	<script charset="utf-8">
+		var app = Elm.Main.fullscreen()
+		const socket = new WebSocket('ws://demos.kaazing.com/echo')
+		// const socket = new WebSocket('ws://echo.websocket.org')
+
+		// Listen for messages
+		socket.addEventListener('message', (event) => {
+			const data = event.data
+			if (typeof data === "string") {
+				app.ports.theQuestion.send(data)
+			} else if (data instanceof ArrayBuffer) {
+				app.ports.theAnswer.send(data)
+			} else { // echo returns a blob containing buffer
+				const reader = new FileReader()
+				reader.addEventListener("load", () => {
+					app.ports.theAnswer.send(reader.result)
+				})
+				reader.readAsArrayBuffer(data)
+			}
+		});
+
+		// Send question to socket
+		app.ports.sendQuestion.subscribe( (question) => {
+			socket.send(question)
+		})
+
+		// Send answer to socket
+		app.ports.sendAnswer.subscribe( (answer) => {
+			socket.send(answer)
+		})
+	</script>
+</body>
+</html>
